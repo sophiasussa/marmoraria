@@ -1,1 +1,13 @@
 @import url('./main-layout.css');
+@import url('./views/cliente-view.css');
+@import url('./views/novo-cliente-view.css');
+@import url('./views/fornecedor-view.css');
+@import url('./views/novo-fornecedor-view.css');
+@import url('./views/funcionarios-view.css');
+@import url('./views/novo-funcionario-view.css');
+@import url('./views/tarefas-gerais-view.css');
+@import url('./views/perfil-usuario-view.css');
+@import url('./views/novo-usuario-view.css');
+@import url('./views/criar-perfil-view.css');
+@import url('./views/tarefas-gerais-concluido-view.css');
+@import url('./views/add-tarefas-gerais-view.css');

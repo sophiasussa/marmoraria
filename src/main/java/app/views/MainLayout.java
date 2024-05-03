@@ -1,20 +1,27 @@
 package app.views;
 
-import app.views.cliente.Cliente;
+import app.views.addtarefasgerais.AddTarefasGeraisView;
+import app.views.cliente.ClienteView;
+import app.views.criarperfil.CriarPerfilView;
+import app.views.fornecedor.FornecedorView;
+import app.views.funcionarios.FuncionariosView;
+import app.views.novocliente.NovoClienteView;
+import app.views.novofornecedor.NovoFornecedorView;
+import app.views.novofuncionario.NovoFuncionarioView;
+import app.views.novousuario.NovoUsuarioView;
+import app.views.perfilusuario.PerfilUsuarioView;
+import app.views.tarefasgerais.TarefasGeraisView;
+import app.views.tarefasgeraisconcluido.TarefasGeraisConcluidoView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
-import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
@@ -42,7 +49,7 @@ public class MainLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
-        H1 appName = new H1("GestãoMarmo");
+        H1 appName = new H1("My App");
         appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
         Header header = new Header(appName);
 
@@ -54,7 +61,25 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        nav.addItem(new SideNavItem("Cliente", Cliente.class, VaadinIcon.FILE.create()));
+        nav.addItem(new SideNavItem("Cliente", ClienteView.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
+        nav.addItem(new SideNavItem("NovoCliente", NovoClienteView.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
+        nav.addItem(new SideNavItem("Fornecedor", FornecedorView.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
+        nav.addItem(new SideNavItem("NovoFornecedor", NovoFornecedorView.class,
+                LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
+        nav.addItem(
+                new SideNavItem("Funcionarios", FuncionariosView.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
+        nav.addItem(new SideNavItem("NovoFuncionario", NovoFuncionarioView.class,
+                LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
+        nav.addItem(
+                new SideNavItem("TarefasGerais", TarefasGeraisView.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
+        nav.addItem(
+                new SideNavItem("PerfilUsuario", PerfilUsuarioView.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
+        nav.addItem(new SideNavItem("NovoUsuario", NovoUsuarioView.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
+        nav.addItem(new SideNavItem("CriarPerfil", CriarPerfilView.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
+        nav.addItem(new SideNavItem("TarefasGeraisConcluido", TarefasGeraisConcluidoView.class,
+                LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
+        nav.addItem(new SideNavItem("AddTarefasGerais", AddTarefasGeraisView.class,
+                LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
 
         return nav;
     }
