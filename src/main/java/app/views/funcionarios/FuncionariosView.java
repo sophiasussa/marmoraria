@@ -50,7 +50,7 @@ public class FuncionariosView extends Composite<VerticalLayout> {
         setTabsSampleData(tabs);
         avatarItem.setWidth("min-content");
         setAvatarItemSampleData(avatarItem);
-        layoutRow2.setWidthFull();
+      //  layoutRow2.setWidthFull();
         getContent().setFlexGrow(1.0, layoutRow2);
         layoutRow2.addClassName(Gap.MEDIUM);
         layoutRow2.setWidth("100%");
