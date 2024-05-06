@@ -15,10 +15,10 @@ public class Telefone {
     }
 
     public int getNumero(){
-        return id;
+        return numero;
     }
 
-    public void setNumero(int id){
+    public void setNumero(int numero){
         this.numero = numero;
     }
 
