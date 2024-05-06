@@ -12,6 +12,7 @@ import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -32,9 +33,10 @@ import org.springframework.data.domain.PageRequest;
 public class FuncionariosView extends Composite<VerticalLayout> {
 
     public FuncionariosView() {
-        HorizontalLayout layoutRow = new HorizontalLayout();
+     HorizontalLayout layoutRow = new HorizontalLayout();
         Tabs tabs = new Tabs();
         AvatarItem avatarItem = new AvatarItem();
+        VerticalLayout layoutColumn2 = new VerticalLayout();
         HorizontalLayout layoutRow2 = new HorizontalLayout();
         TextField textField = new TextField();
         Button buttonPrimary = new Button();
@@ -45,19 +47,24 @@ public class FuncionariosView extends Composite<VerticalLayout> {
         getContent().setFlexGrow(1.0, layoutRow);
         layoutRow.addClassName(Gap.MEDIUM);
         layoutRow.setWidth("100%");
-        layoutRow.setHeight("49px");
+        layoutRow.getStyle().set("flex-grow", "1");
         tabs.setWidth("100%");
         setTabsSampleData(tabs);
         avatarItem.setWidth("min-content");
         setAvatarItemSampleData(avatarItem);
-      //  layoutRow2.setWidthFull();
-        getContent().setFlexGrow(1.0, layoutRow2);
+        layoutColumn2.setWidthFull();
+        getContent().setFlexGrow(1.0, layoutColumn2);
+        layoutColumn2.setWidth("100%");
+        layoutColumn2.getStyle().set("flex-grow", "1");
+        layoutRow2.setWidthFull();
+        layoutColumn2.setFlexGrow(1.0, layoutRow2);
         layoutRow2.addClassName(Gap.MEDIUM);
         layoutRow2.setWidth("100%");
-        layoutRow2.setHeight("77px");
+        layoutRow2.getStyle().set("flex-grow", "1");
         layoutRow2.setAlignItems(Alignment.END);
         layoutRow2.setJustifyContentMode(JustifyContentMode.END);
         textField.setLabel("Text field");
+        layoutRow2.setAlignSelf(FlexComponent.Alignment.CENTER, textField);
         textField.setWidth("min-content");
         buttonPrimary.setText("Button");
         buttonPrimary.setWidth("min-content");
@@ -70,10 +77,11 @@ public class FuncionariosView extends Composite<VerticalLayout> {
         getContent().add(layoutRow);
         layoutRow.add(tabs);
         layoutRow.add(avatarItem);
-        getContent().add(layoutRow2);
+        getContent().add(layoutColumn2);
+        layoutColumn2.add(layoutRow2);
         layoutRow2.add(textField);
         layoutRow2.add(buttonPrimary);
-        getContent().add(minimalistGrid);
+        layoutColumn2.add(minimalistGrid);
     }
 
     private void setTabsSampleData(Tabs tabs) {
