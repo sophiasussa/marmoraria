@@ -8,7 +8,14 @@ public class Pessoa {
     private int rg;
     private List<Telefone> telefones;
     private List<Endereco> enderecos;
-
+    
+    public Pessoa(int id, int cpf, int rg, List<Telefone> telefones, List<Endereco> enderecos) {
+        this.id = id;
+        this.cpf = cpf;
+        this.rg = rg;
+        this.telefones = telefones;
+        this.enderecos = enderecos;
+    }
     public int getId() {
         return id;
     }
