@@ -1,6 +1,8 @@
 package app.views.novocliente;
 
+import app.controller.ControllerTipoTelefone;
 import app.data.SamplePerson;
+import app.model.TipoTelefone;
 import app.services.SamplePersonService;
 import app.views.MainLayout;
 import com.vaadin.flow.component.Composite;
@@ -9,6 +11,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.Uses;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.grid.Grid;
@@ -17,8 +20,12 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Input;
+import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -39,6 +46,7 @@ import org.springframework.data.domain.PageRequest;
 @Route(value = "my-view2", layout = MainLayout.class)
 @Uses(Icon.class)
 public class NovoClienteView extends Composite<VerticalLayout> {
+    ControllerTipoTelefone controller = new ControllerTipoTelefone();
 
     public NovoClienteView() {
         VerticalLayout layoutColumn2 = new VerticalLayout();
@@ -114,14 +122,16 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         layoutColumn4.setWidth("100%");
         layoutColumn4.getStyle().set("flex-grow", "1");
         formLayout2Col2.setWidth("100%");
-        comboBox.setLabel("Combo Box");
+        comboBox.setPlaceholder("Telefone Tipo");
         comboBox.setWidth("min-content");
         setComboBoxSampleData(comboBox);
-        textField4.setLabel("Text field");
+        textField4.setPlaceholder("Número");
         textField4.setWidth("min-content");
-        link.setText("Hello Vaadin");
-        link.setHref("#");
-        link.setWidth("min-content");
+
+        Button buttonInsideLink = new Button("Adicionar Tipo de Telefone");
+        buttonInsideLink.addClickListener(event -> openDialog());
+        link.add(buttonInsideLink);
+
         buttonSecondary.setText("+");
         layoutColumn4.setAlignSelf(FlexComponent.Alignment.END, buttonSecondary);
         buttonSecondary.setWidth("min-content");
@@ -129,7 +139,11 @@ public class NovoClienteView extends Composite<VerticalLayout> {
                 GridVariant.LUMO_NO_ROW_BORDERS);
         minimalistGrid.setWidth("100%");
         minimalistGrid.getStyle().set("flex-grow", "0");
+        minimalistGrid.setVisible(false);
         setGridSampleData(minimalistGrid);
+        buttonSecondary.addClickListener(event -> {
+            minimalistGrid.setVisible(true);
+        });
         h52.setText("Adicionar Endereços");
         h52.setWidth("max-content");
         layoutColumn5.setWidthFull();
@@ -235,14 +249,10 @@ public class NovoClienteView extends Composite<VerticalLayout> {
     record SampleItem(String value, String label, Boolean disabled) {
     }
 
-    private void setComboBoxSampleData(ComboBox comboBox) {
-        List<SampleItem> sampleItems = new ArrayList<>();
-        sampleItems.add(new SampleItem("first", "First", null));
-        sampleItems.add(new SampleItem("second", "Second", null));
-        sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
-        sampleItems.add(new SampleItem("fourth", "Fourth", null));
-        comboBox.setItems(sampleItems);
-        comboBox.setItemLabelGenerator(item -> ((SampleItem) item).label());
+    private void setComboBoxSampleData(ComboBox<TipoTelefone> comboBox) {
+        List<TipoTelefone> tiposTelefone = controller.pesquisarTodos();
+        comboBox.setItems(tiposTelefone);
+        comboBox.setItemLabelGenerator(tipoTelefone -> tipoTelefone.getNome());
     }
 
     private void setGridSampleData(Grid grid) {
@@ -250,6 +260,39 @@ public class NovoClienteView extends Composite<VerticalLayout> {
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
     }
+
+    private void openDialog() {
+        Dialog dialog = new Dialog();
+
+        FormLayout formLayout = new FormLayout();
+        TextField nomeField = new TextField("Nome");
+        formLayout.add(nomeField);
+
+        Button confirmarButton = new Button("Confirmar", event -> {
+            TipoTelefone tipoTelefone = new TipoTelefone();
+            tipoTelefone.setNome(nomeField.getValue());
+            if (controller.inserir(tipoTelefone) == true) {
+                Notification notification = new Notification(
+                        "Autor salvo com sucesso.", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            } else {
+                Notification notification = new Notification(
+                        "Erro ao salvar. Verifique se todos os dados foram preenchidos.", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            }
+            dialog.close();
+        });
+        Button cancelarButton = new Button("Cancelar", event -> dialog.close());
+
+        formLayout.add(confirmarButton, cancelarButton);
+        dialog.add(formLayout);
+        dialog.open();
+    }
+
 
     @Autowired()
     private SamplePersonService samplePersonService;
