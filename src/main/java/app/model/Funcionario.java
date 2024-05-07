@@ -9,8 +9,9 @@ public class Funcionario extends Pessoa{
     private Cargo cargo;
     private Departamento departamento;
 
-    public Funcionario(int id, int cpf, int rg, List<Telefone> telefones, List<Endereco> enderecos, int idFuncionario, int dataAdm, float salario, Cargo cargo, Departamento departamento) {
-        super(id, cpf, rg, telefones, enderecos);
+    public Funcionario(int id, String nome, int cpf, int rg, List<Telefone> telefones, List<Endereco> enderecos,
+            int idFuncionario, int dataAdm, float salario, Cargo cargo, Departamento departamento) {
+        super(id, nome, cpf, rg, telefones, enderecos);
         this.idFuncionario = idFuncionario;
         this.dataAdm = dataAdm;
         this.salario = salario;

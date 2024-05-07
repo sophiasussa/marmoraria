@@ -3,8 +3,7 @@ package app.model;
 public class Telefone {
     private int id;
     private int numero;
-    private TipoEndereco tipoEndereco;
-
+    private TipoTelefone tipoTelefone;
 
     public int getId(){
         return id;
@@ -21,12 +20,12 @@ public class Telefone {
     public void setNumero(int numero){
         this.numero = numero;
     }
-
-    public TipoEndereco getTipoEndereco(){
-        return tipoEndereco;
+    
+    public TipoTelefone getTipoTelefone() {
+        return tipoTelefone;
     }
 
-    public void setTipoEndereco(TipoEndereco tipoEndereco){
-        this.tipoEndereco = tipoEndereco;
+    public void setTipoTelefone(TipoTelefone tipoTelefone) {
+        this.tipoTelefone = tipoTelefone;
     }
 }

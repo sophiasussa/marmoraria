@@ -4,13 +4,15 @@ import java.util.List;
 
 public class Pessoa {
     private int id;
+    private String nome;
     private int cpf;
     private int rg;
     private List<Telefone> telefones;
     private List<Endereco> enderecos;
     
-    public Pessoa(int id, int cpf, int rg, List<Telefone> telefones, List<Endereco> enderecos) {
+    public Pessoa(int id, String nome, int cpf, int rg, List<Telefone> telefones, List<Endereco> enderecos) {
         this.id = id;
+        this.nome = nome;
         this.cpf = cpf;
         this.rg = rg;
         this.telefones = telefones;
@@ -22,6 +24,14 @@ public class Pessoa {
     public void setId(int id) {
         this.id = id;
     }
+
+    public String getNome() {
+        return nome;
+    }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
     public int getCpf() {
         return cpf;
     }

@@ -6,8 +6,10 @@ public class Fornecedores extends Pessoa{
     private int idFornecedor;
     private String descriProdu;
 
-    public Fornecedores(int id, int cpf, int rg, List<Telefone> telefones, List<Endereco> enderecos, int idFornecedor, String descriProdu) {
-        super(id, cpf, rg, telefones, enderecos);
+
+    public Fornecedores(int id, String nome, int cpf, int rg, List<Telefone> telefones, List<Endereco> enderecos,
+            int idFornecedor, String descriProdu) {
+        super(id, nome, cpf, rg, telefones, enderecos);
         this.idFornecedor = idFornecedor;
         this.descriProdu = descriProdu;
     }
