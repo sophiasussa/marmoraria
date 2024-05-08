@@ -5,6 +5,11 @@ public class Telefone {
     private int numero;
     private TipoTelefone tipoTelefone;
 
+    public Telefone(int numero, TipoTelefone tipoTelefone) {
+        this.numero = numero;
+        this.tipoTelefone = tipoTelefone;
+    }
+
     public int getId(){
         return id;
     }

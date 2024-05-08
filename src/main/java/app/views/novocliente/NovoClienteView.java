@@ -2,6 +2,7 @@ package app.views.novocliente;
 
 import app.controller.ControllerTipoTelefone;
 import app.data.SamplePerson;
+import app.model.Telefone;
 import app.model.TipoTelefone;
 import app.services.SamplePersonService;
 import app.views.MainLayout;
@@ -33,12 +34,17 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import com.vaadin.flow.data.provider.ListDataProvider;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
@@ -47,6 +53,8 @@ import org.springframework.data.domain.PageRequest;
 @Uses(Icon.class)
 public class NovoClienteView extends Composite<VerticalLayout> {
     ControllerTipoTelefone controller = new ControllerTipoTelefone();
+    private List<Telefone> telefonesList = new ArrayList<>();
+    ListDataProvider<Telefone> dataProvider = new ListDataProvider<>(telefonesList);
 
     public NovoClienteView() {
         VerticalLayout layoutColumn2 = new VerticalLayout();
@@ -67,7 +75,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         TextField textField4 = new TextField();
         Anchor link = new Anchor();
         Button buttonSecondary = new Button();
-        Grid minimalistGrid = new Grid(SamplePerson.class);
+        Grid<Telefone> minimalistGrid = new Grid<>();
         H5 h52 = new H5();
         VerticalLayout layoutColumn5 = new VerticalLayout();
         FormLayout formLayout2Col3 = new FormLayout();
@@ -140,9 +148,29 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         minimalistGrid.setWidth("100%");
         minimalistGrid.getStyle().set("flex-grow", "0");
         minimalistGrid.setVisible(false);
-        setGridSampleData(minimalistGrid);
+
+
         buttonSecondary.addClickListener(event -> {
             minimalistGrid.setVisible(true);
+    
+            TipoTelefone tipoTelefoneSelecionado = (TipoTelefone) comboBox.getValue();
+            String numero = textField4.getValue();
+        
+            if (tipoTelefoneSelecionado != null && !numero.isEmpty()) {
+                comboBox.clear();
+                textField4.clear();
+                
+                Telefone telefone = new Telefone(Integer.parseInt(numero), tipoTelefoneSelecionado);
+                telefonesList.add(telefone);
+                
+                setGridSampleData(minimalistGrid);
+            } else {
+                Notification notification = new Notification(
+                        "Por favor, selecione um tipo de telefone e insira um número.", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            }
         });
         h52.setText("Adicionar Endereços");
         h52.setWidth("max-content");
@@ -255,10 +283,14 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         comboBox.setItemLabelGenerator(tipoTelefone -> tipoTelefone.getNome());
     }
 
-    private void setGridSampleData(Grid grid) {
-        grid.setItems(query -> samplePersonService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+    private void setGridSampleData(Grid<Telefone> grid) {
+        DataProvider<Telefone, ?> dataProvider = DataProvider.ofCollection(telefonesList);
+
+        grid.setDataProvider(dataProvider);
+
+        grid.addColumn(telefone -> telefone.getTipoTelefone().getNome()).setHeader("Tipo de Telefone");
+        grid.addColumn(Telefone::getNumero).setHeader("Número");
+        System.out.println("teste");
     }
 
     private void openDialog() {
