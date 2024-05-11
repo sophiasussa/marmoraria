@@ -113,30 +113,6 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         layoutRow.addClassName(Gap.MEDIUM);
         layoutRow.setWidth("100%");
         layoutRow.getStyle().set("flex-grow", "1");
-/*      radioGroup.setLabel("Pessoa");
-        radioGroup.setWidth("min-content");
-        radioGroup.setItems("Pessoa Jurídica", "Pessoa Física");
-        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-        radioGroup.getElement().getStyle().set("white-space", "nowrap");
-        textField2.setVisible(false);
-        textField3.setVisible(false);
-
-        radioGroup.addValueChangeListener(event -> {
-            if ("Pessoa Jurídica".equals(event.getValue())) {
-                textField2.setVisible(true);
-                textField2.setPlaceholder("Insica CNPJ");
-                textField3.setVisible(true);
-                textField3.setPlaceholder("Insira Inscrição Estadual");
-            } else if ("Pessoa Física".equals(event.getValue())) {
-                textField2.setVisible(true);
-                textField2.setPlaceholder("Insica CPF");
-                textField3.setVisible(true);
-                textField3.setPlaceholder("Insira RG");
-            } else {
-                textField2.setVisible(false);
-                textField3.setVisible(false);
-            }
-        });*/
         layoutRow.setAlignSelf(FlexComponent.Alignment.CENTER, formLayout2Col);
         formLayout2Col.setWidth("100%");   
         
@@ -281,14 +257,19 @@ public class NovoClienteView extends Composite<VerticalLayout> {
     }
 
     private void setAccordionSampleData(Accordion accordion) {
-        RadioButtonGroup radioGroup = new RadioButtonGroup("", "Pessoa Jurídica", "Pessoa Física");
-        VerticalLayout Informacoes = new VerticalLayout();
-        Informacoes.setSpacing(false);
-        Informacoes.setPadding(false);
-
+        RadioButtonGroup<String> radioGroup = new RadioButtonGroup<>("", "Pessoa Jurídica", "Pessoa Física");
+        VerticalLayout informacoes = new VerticalLayout();
+        informacoes.setSpacing(false);
+        informacoes.setPadding(false);
+        
+        TextField textField2 = new TextField();
+        TextField textField3 = new TextField();
         textField2.setVisible(false);
         textField3.setVisible(false);
-
+        
+        HorizontalLayout textFieldsLayout = new HorizontalLayout();
+        textFieldsLayout.add(textField2, textField3);
+        
         radioGroup.addValueChangeListener(event -> {
             if ("Pessoa Jurídica".equals(event.getValue())) {
                 textField2.setVisible(true);
@@ -305,20 +286,19 @@ public class NovoClienteView extends Composite<VerticalLayout> {
                 textField3.setVisible(false);
             }
         });
-
-
-        Informacoes.add(radioGroup, textField2, textField3);
-        accordion.add("Informações Pessoais", Informacoes);
+        
+        informacoes.add(radioGroup, textFieldsLayout);
+        accordion.add("Informações Pessoais", informacoes);
 
 
         Span street = new Span("4027 Amber Lake Canyon");
         Span zipCode = new Span("72333-5884 Cozy Nook");
         Span city = new Span("Arkansas");
-        VerticalLayout billingAddressLayout = new VerticalLayout();
-        billingAddressLayout.setSpacing(false);
-        billingAddressLayout.setPadding(false);
-        billingAddressLayout.add(street, zipCode, city);
-        accordion.add("Billing address", billingAddressLayout);
+        VerticalLayout telefone = new VerticalLayout();
+        telefone.setSpacing(false);
+        telefone.setPadding(false);
+        telefone.add(street, zipCode, city);
+        accordion.add("Telefone", telefone);
         Span cardBrand = new Span("Mastercard");
         Span cardNumber = new Span("1234 5678 9012 3456");
         Span expiryDate = new Span("Expires 06/21");
