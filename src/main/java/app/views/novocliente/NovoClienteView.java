@@ -53,45 +53,42 @@ import org.springframework.data.domain.PageRequest;
 @Uses(Icon.class)
 public class NovoClienteView extends Composite<VerticalLayout> {
     ControllerTipoTelefone controller = new ControllerTipoTelefone();
-    private List<Telefone> telefonesList = new ArrayList<>();
-    ListDataProvider<Telefone> dataProvider = new ListDataProvider<>(telefonesList);
+    List<Telefone> telefones = new ArrayList<>();
+    List<ComboBox<TipoTelefone>> comboBoxes = new ArrayList<>();
+    List<TextField> textFields = new ArrayList<>();
+    VerticalLayout layoutColumn2 = new VerticalLayout();
+    H4 h4 = new H4();
+    VerticalLayout layoutColumn3 = new VerticalLayout();
+    Hr hr = new Hr();
+    TextField textField = new TextField();
+    Accordion accordion = new Accordion();
+    HorizontalLayout layoutRow = new HorizontalLayout();
+    FormLayout formLayout2Col = new FormLayout();
+    TextField textField2 = new TextField();
+    TextField textField3 = new TextField();
+    H5 h5 = new H5();
+    VerticalLayout layoutColumn4 = new VerticalLayout();
+    FormLayout formLayout2Col2 = new FormLayout();
+    ComboBox comboBox = new ComboBox();
+    TextField textField4 = new TextField();
+    Anchor link = new Anchor();
+    Button buttonSecondary = new Button();
+    H5 h52 = new H5();
+    VerticalLayout layoutColumn5 = new VerticalLayout();
+    FormLayout formLayout2Col3 = new FormLayout();
+    ComboBox comboBox2 = new ComboBox();
+    ComboBox comboBox3 = new ComboBox();
+    Anchor link2 = new Anchor();
+    Anchor link3 = new Anchor();
+    FormLayout formLayout3Col = new FormLayout();
+    TextField textField5 = new TextField();
+    TextField textField6 = new TextField();
+    TextField textField7 = new TextField();
+    Button buttonSecondary2 = new Button();
+    Button buttonPrimary = new Button();
+    Hr hr2 = new Hr();
 
     public NovoClienteView() {
-        VerticalLayout layoutColumn2 = new VerticalLayout();
-        H4 h4 = new H4();
-        VerticalLayout layoutColumn3 = new VerticalLayout();
-        Hr hr = new Hr();
-        TextField textField = new TextField();
-        Accordion accordion = new Accordion();
-        HorizontalLayout layoutRow = new HorizontalLayout();
-        RadioButtonGroup radioGroup = new RadioButtonGroup();
-        FormLayout formLayout2Col = new FormLayout();
-        TextField textField2 = new TextField();
-        TextField textField3 = new TextField();
-        H5 h5 = new H5();
-        VerticalLayout layoutColumn4 = new VerticalLayout();
-        FormLayout formLayout2Col2 = new FormLayout();
-        ComboBox comboBox = new ComboBox();
-        TextField textField4 = new TextField();
-        Anchor link = new Anchor();
-        Button buttonSecondary = new Button();
-        Grid<Telefone> minimalistGrid = new Grid<>();
-        H5 h52 = new H5();
-        VerticalLayout layoutColumn5 = new VerticalLayout();
-        FormLayout formLayout2Col3 = new FormLayout();
-        ComboBox comboBox2 = new ComboBox();
-        ComboBox comboBox3 = new ComboBox();
-        Anchor link2 = new Anchor();
-        Anchor link3 = new Anchor();
-        FormLayout formLayout3Col = new FormLayout();
-        TextField textField5 = new TextField();
-        TextField textField6 = new TextField();
-        TextField textField7 = new TextField();
-        Button buttonSecondary2 = new Button();
-        Grid basicGrid = new Grid(SamplePerson.class);
-        ProgressBar progressBar = new ProgressBar();
-        Button buttonPrimary = new Button();
-        Hr hr2 = new Hr();
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         layoutColumn2.setWidthFull();
@@ -104,25 +101,45 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         layoutColumn2.setFlexGrow(1.0, layoutColumn3);
         layoutColumn3.setWidth("100%");
         layoutColumn3.getStyle().set("flex-grow", "1");
-        textField.setLabel("Text field");
+        textField.setPlaceholder("Nome");
         textField.setWidth("min-content");
         accordion.setWidth("100%");
         setAccordionSampleData(accordion);
+
+
+        
         layoutRow.setWidthFull();
         layoutColumn3.setFlexGrow(1.0, layoutRow);
         layoutRow.addClassName(Gap.MEDIUM);
         layoutRow.setWidth("100%");
         layoutRow.getStyle().set("flex-grow", "1");
-        radioGroup.setLabel("Radio Group");
+/*      radioGroup.setLabel("Pessoa");
         radioGroup.setWidth("min-content");
-        radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
+        radioGroup.setItems("Pessoa Jurídica", "Pessoa Física");
         radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+        radioGroup.getElement().getStyle().set("white-space", "nowrap");
+        textField2.setVisible(false);
+        textField3.setVisible(false);
+
+        radioGroup.addValueChangeListener(event -> {
+            if ("Pessoa Jurídica".equals(event.getValue())) {
+                textField2.setVisible(true);
+                textField2.setPlaceholder("Insica CNPJ");
+                textField3.setVisible(true);
+                textField3.setPlaceholder("Insira Inscrição Estadual");
+            } else if ("Pessoa Física".equals(event.getValue())) {
+                textField2.setVisible(true);
+                textField2.setPlaceholder("Insica CPF");
+                textField3.setVisible(true);
+                textField3.setPlaceholder("Insira RG");
+            } else {
+                textField2.setVisible(false);
+                textField3.setVisible(false);
+            }
+        });*/
         layoutRow.setAlignSelf(FlexComponent.Alignment.CENTER, formLayout2Col);
-        formLayout2Col.setWidth("100%");
-        textField2.setLabel("Text field");
-        textField2.setWidth("min-content");
-        textField3.setLabel("Text field");
-        textField3.setWidth("min-content");
+        formLayout2Col.setWidth("100%");   
+        
         h5.setText("Adicionar Telefones");
         h5.setWidth("max-content");
         layoutColumn4.setWidthFull();
@@ -135,38 +152,59 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         setComboBoxSampleData(comboBox);
         textField4.setPlaceholder("Número");
         textField4.setWidth("min-content");
-
         Button buttonInsideLink = new Button("Adicionar Tipo de Telefone");
         buttonInsideLink.addClickListener(event -> openDialog());
         link.add(buttonInsideLink);
-
         buttonSecondary.setText("+");
         layoutColumn4.setAlignSelf(FlexComponent.Alignment.END, buttonSecondary);
         buttonSecondary.setWidth("min-content");
-        minimalistGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER,
-                GridVariant.LUMO_NO_ROW_BORDERS);
-        minimalistGrid.setWidth("100%");
-        minimalistGrid.getStyle().set("flex-grow", "0");
-        minimalistGrid.setVisible(false);
 
-
-        buttonSecondary.addClickListener(event -> {
-            minimalistGrid.setVisible(true);
-    
+        buttonSecondary.addClickListener(event -> {  
             TipoTelefone tipoTelefoneSelecionado = (TipoTelefone) comboBox.getValue();
             String numero = textField4.getValue();
         
-            if (tipoTelefoneSelecionado != null && !numero.isEmpty()) {
-                comboBox.clear();
-                textField4.clear();
-                
-                Telefone telefone = new Telefone(Integer.parseInt(numero), tipoTelefoneSelecionado);
-                telefonesList.add(telefone);
-                
-                setGridSampleData(minimalistGrid);
+            boolean camposPreenchidos = tipoTelefoneSelecionado != null && !numero.isEmpty();
+            boolean valoresUnicos = isTelefoneUnico(numero);
+
+            for (ComboBox<TipoTelefone> cb : comboBoxes) {
+                if (cb.getValue() == null) {
+                    camposPreenchidos = false;
+                    break;
+                }
+            }
+            for (TextField tf : textFields) {
+                if (tf.getValue().isEmpty()) {
+                    camposPreenchidos = false;
+                    break;
+                }
+            }
+        
+            if (camposPreenchidos) {
+                if (valoresUnicos) {
+                    ComboBox<TipoTelefone> novoComboBox = new ComboBox<>();
+                    novoComboBox.setPlaceholder("Telefone Tipo");
+                    setComboBoxSampleData(novoComboBox);
+        
+                    TextField novoTextField = new TextField();
+                    novoTextField.setPlaceholder("Número");
+        
+                    comboBoxes.add(novoComboBox);
+                    textFields.add(novoTextField);
+                    layoutColumn4.add(novoComboBox);
+                    layoutColumn4.add(novoTextField);
+        
+                    Telefone novoTelefone = new Telefone(Integer.parseInt(numero), tipoTelefoneSelecionado);
+                    telefones.add(novoTelefone);
+                } else {
+                    Notification notification = new Notification(
+                        "O número de telefone já está em uso. Por favor, insira um número de telefone único.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+                }
             } else {
                 Notification notification = new Notification(
-                        "Por favor, selecione um tipo de telefone e insira um número.", 3000);
+                    "Por favor, preencha todos os campos antes de adicionar mais.", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
@@ -179,34 +217,30 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         layoutColumn5.setWidth("100%");
         layoutColumn5.getStyle().set("flex-grow", "1");
         formLayout2Col3.setWidth("100%");
-        comboBox2.setLabel("Combo Box");
+        comboBox2.setPlaceholder("Endereço Tipo");
         comboBox2.setWidth("min-content");
         setComboBoxSampleData(comboBox2);
-        comboBox3.setLabel("Combo Box");
+        comboBox3.setPlaceholder("Cidade");
         comboBox3.setWidth("min-content");
         setComboBoxSampleData(comboBox3);
-        link2.setText("Hello Vaadin");
-        link2.setHref("#");
-        link2.setWidth("min-content");
-        link3.setText("Hello Vaadin");
-        link3.setHref("#");
-        link3.setWidth("min-content");
+        Button buttonInsideLink2 = new Button("Adicionar Tipo de Endereço");
+        buttonInsideLink.addClickListener(event -> openDialog());
+        link2.add(buttonInsideLink);
+        Button buttonInsideLink3 = new Button("Adicionar Tipo de Endereço");
+        buttonInsideLink.addClickListener(event -> openDialog());
+        link2.add(buttonInsideLink);
         formLayout3Col.setWidth("100%");
         formLayout3Col.setResponsiveSteps(new ResponsiveStep("0", 1), new ResponsiveStep("250px", 2),
                 new ResponsiveStep("500px", 3));
-        textField5.setLabel("Text field");
+        textField5.setPlaceholder("Logradouro");
         textField5.setWidth("min-content");
-        textField6.setLabel("Text field");
+        textField6.setPlaceholder("Bairro");
         textField6.setWidth("min-content");
-        textField7.setLabel("Text field");
+        textField7.setPlaceholder("Número");
         textField7.setWidth("min-content");
         buttonSecondary2.setText("+");
         layoutColumn5.setAlignSelf(FlexComponent.Alignment.END, buttonSecondary2);
         buttonSecondary2.setWidth("min-content");
-        basicGrid.setWidth("100%");
-        basicGrid.getStyle().set("flex-grow", "0");
-        setGridSampleData(basicGrid);
-        progressBar.setValue(0.5);
         buttonPrimary.setText("Salvar");
         layoutColumn3.setAlignSelf(FlexComponent.Alignment.END, buttonPrimary);
         buttonPrimary.setWidth("min-content");
@@ -218,10 +252,10 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         layoutColumn3.add(textField);
         layoutColumn3.add(accordion);
         layoutColumn3.add(layoutRow);
-        layoutRow.add(radioGroup);
+     //   layoutRow.add(radioGroup);
         layoutRow.add(formLayout2Col);
-        formLayout2Col.add(textField2);
-        formLayout2Col.add(textField3);
+   //     formLayout2Col.add(textField2);
+    //    formLayout2Col.add(textField3);
         layoutColumn3.add(h5);
         layoutColumn3.add(layoutColumn4);
         layoutColumn4.add(formLayout2Col2);
@@ -229,7 +263,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         formLayout2Col2.add(textField4);
         formLayout2Col2.add(link);
         layoutColumn4.add(buttonSecondary);
-        layoutColumn4.add(minimalistGrid);
+        layoutColumn3.add(buttonSecondary); 
         layoutColumn3.add(h52);
         layoutColumn3.add(layoutColumn5);
         layoutColumn5.add(formLayout2Col3);
@@ -242,20 +276,41 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         formLayout3Col.add(textField6);
         formLayout3Col.add(textField7);
         layoutColumn5.add(buttonSecondary2);
-        layoutColumn5.add(basicGrid);
-        layoutColumn3.add(progressBar);
         layoutColumn3.add(buttonPrimary);
         layoutColumn3.add(hr2);
     }
 
     private void setAccordionSampleData(Accordion accordion) {
-        Span name = new Span("Sophia Williams");
-        Span email = new Span("sophia.williams@company.com");
-        Span phone = new Span("(501) 555-9128");
-        VerticalLayout personalInformationLayout = new VerticalLayout(name, email, phone);
-        personalInformationLayout.setSpacing(false);
-        personalInformationLayout.setPadding(false);
-        accordion.add("Personal information", personalInformationLayout);
+        RadioButtonGroup radioGroup = new RadioButtonGroup("", "Pessoa Jurídica", "Pessoa Física");
+        VerticalLayout Informacoes = new VerticalLayout();
+        Informacoes.setSpacing(false);
+        Informacoes.setPadding(false);
+
+        textField2.setVisible(false);
+        textField3.setVisible(false);
+
+        radioGroup.addValueChangeListener(event -> {
+            if ("Pessoa Jurídica".equals(event.getValue())) {
+                textField2.setVisible(true);
+                textField2.setPlaceholder("Insica CNPJ");
+                textField3.setVisible(true);
+                textField3.setPlaceholder("Insira Inscrição Estadual");
+            } else if ("Pessoa Física".equals(event.getValue())) {
+                textField2.setVisible(true);
+                textField2.setPlaceholder("Insica CPF");
+                textField3.setVisible(true);
+                textField3.setPlaceholder("Insira RG");
+            } else {
+                textField2.setVisible(false);
+                textField3.setVisible(false);
+            }
+        });
+
+
+        Informacoes.add(radioGroup, textField2, textField3);
+        accordion.add("Informações Pessoais", Informacoes);
+
+
         Span street = new Span("4027 Amber Lake Canyon");
         Span zipCode = new Span("72333-5884 Cozy Nook");
         Span city = new Span("Arkansas");
@@ -283,14 +338,13 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         comboBox.setItemLabelGenerator(tipoTelefone -> tipoTelefone.getNome());
     }
 
-    private void setGridSampleData(Grid<Telefone> grid) {
-        DataProvider<Telefone, ?> dataProvider = DataProvider.ofCollection(telefonesList);
-
-        grid.setDataProvider(dataProvider);
-
-        grid.addColumn(telefone -> telefone.getTipoTelefone().getNome()).setHeader("Tipo de Telefone");
-        grid.addColumn(Telefone::getNumero).setHeader("Número");
-        System.out.println("teste");
+    private boolean isTelefoneUnico(String numero) {
+        for (Telefone telefone : telefones) {
+            if (telefone.getNumero() == Integer.parseInt(numero)) {
+                return false; 
+            }
+        }
+        return true; 
     }
 
     private void openDialog() {
@@ -325,7 +379,4 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         dialog.open();
     }
 
-
-    @Autowired()
-    private SamplePersonService samplePersonService;
 }
