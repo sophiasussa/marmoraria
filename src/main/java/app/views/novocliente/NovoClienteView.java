@@ -240,10 +240,10 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         ComboBox comboBox3 = new ComboBox();
         comboBox2.setPlaceholder("Endereço Tipo");
         comboBox2.setWidth("min-content");
-        setComboBoxSampleData(comboBox2);
+        setComboBoxSampleData1(comboBox2);
         comboBox3.setPlaceholder("Cidade");
         comboBox3.setWidth("min-content");
-        setComboBoxSampleData(comboBox3);
+        setComboBoxSampleData2(comboBox3);
 
         Button buttonInsideLink2 = new Button("Adicionar Tipo de Endereço");
         buttonInsideLink2.addClickListener(event -> openDialog2());
@@ -286,6 +286,19 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         List<TipoTelefone> tiposTelefone = controller.pesquisarTodos();
         comboBox.setItems(tiposTelefone);
         comboBox.setItemLabelGenerator(tipoTelefone -> tipoTelefone.getNome());
+    }
+
+    
+    private void setComboBoxSampleData1(ComboBox<TipoEndereco> comboBox2) {
+        List<TipoEndereco> tiposEndereco = controller1.pesquisarTodos();
+        comboBox2.setItems(tiposEndereco);
+        comboBox2.setItemLabelGenerator(tipoEndereco -> tipoEndereco.getNome());
+    }
+
+    private void setComboBoxSampleData2(ComboBox<Cidade> comboBox3) {
+        List<Cidade> cidades = controller2.pesquisarTodos();
+        comboBox3.setItems(cidades);
+        comboBox3.setItemLabelGenerator(cidade -> cidade.getNome());
     }
 
     private boolean isTelefoneUnico(String numero) {
