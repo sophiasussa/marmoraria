@@ -1,8 +1,12 @@
 package app.views.novocliente;
 
+import app.controller.ControllerCidade;
+import app.controller.ControllerTipoEndereco;
 import app.controller.ControllerTipoTelefone;
 import app.data.SamplePerson;
+import app.model.Cidade;
 import app.model.Telefone;
+import app.model.TipoEndereco;
 import app.model.TipoTelefone;
 import app.services.SamplePersonService;
 import app.views.MainLayout;
@@ -53,6 +57,8 @@ import org.springframework.data.domain.PageRequest;
 @Uses(Icon.class)
 public class NovoClienteView extends Composite<VerticalLayout> {
     ControllerTipoTelefone controller = new ControllerTipoTelefone();
+    ControllerTipoEndereco controller1 = new ControllerTipoEndereco();
+    ControllerCidade controller2 = new ControllerCidade();
     List<Telefone> telefones = new ArrayList<>();
     List<ComboBox<TipoTelefone>> comboBoxes = new ArrayList<>();
     List<TextField> textFields = new ArrayList<>();
@@ -219,9 +225,6 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         telefone.add(h5, formLayout2Col2, formLayout3Col2, buttonSecondary); 
         accordion.add("Telefone", telefone);
 
-
-
-
         H5 h52 = new H5();
         h52.setText("Adicionar Endereços");
         h52.setWidth("max-content");
@@ -243,10 +246,10 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         setComboBoxSampleData(comboBox3);
 
         Button buttonInsideLink2 = new Button("Adicionar Tipo de Endereço");
-        buttonInsideLink2.addClickListener(event -> openDialog());
+        buttonInsideLink2.addClickListener(event -> openDialog2());
         link2.add(buttonInsideLink2);
         Button buttonInsideLink3 = new Button("Adicionar Cidade");
-        buttonInsideLink3.addClickListener(event -> openDialog());
+        buttonInsideLink3.addClickListener(event -> openDialog3());
         link3.add(buttonInsideLink3);
 
         TextField textField5 = new TextField();
@@ -306,7 +309,73 @@ public class NovoClienteView extends Composite<VerticalLayout> {
             tipoTelefone.setNome(nomeField.getValue());
             if (controller.inserir(tipoTelefone) == true) {
                 Notification notification = new Notification(
-                        "Autor salvo com sucesso.", 3000);
+                        "Tipo de Telefone salvo com sucesso.", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            } else {
+                Notification notification = new Notification(
+                        "Erro ao salvar. Verifique se todos os dados foram preenchidos.", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            }
+            dialog.close();
+        });
+        Button cancelarButton = new Button("Cancelar", event -> dialog.close());
+
+        formLayout.add(confirmarButton, cancelarButton);
+        dialog.add(formLayout);
+        dialog.open();
+    }
+
+    private void openDialog2() {
+        Dialog dialog = new Dialog();
+
+        FormLayout formLayout = new FormLayout();
+        TextField nomeField = new TextField("Nome");
+        formLayout.add(nomeField);
+
+        Button confirmarButton = new Button("Confirmar", event -> {
+            TipoEndereco tipoEndereco = new TipoEndereco();
+        
+            tipoEndereco.setNome(nomeField.getValue());
+            if (controller1.inserir(tipoEndereco) == true) {
+                Notification notification = new Notification(
+                        "Tipo de Endereço salvo com sucesso.", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            } else {
+                Notification notification = new Notification(
+                        "Erro ao salvar. Verifique se todos os dados foram preenchidos.", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            }
+            dialog.close();
+        });
+        Button cancelarButton = new Button("Cancelar", event -> dialog.close());
+
+        formLayout.add(confirmarButton, cancelarButton);
+        dialog.add(formLayout);
+        dialog.open();
+    }
+
+    private void openDialog3() {
+        Dialog dialog = new Dialog();
+
+        FormLayout formLayout = new FormLayout();
+        TextField nomeField = new TextField("Nome");
+        formLayout.add(nomeField);
+
+        Button confirmarButton = new Button("Confirmar", event -> {
+            Cidade cidade = new Cidade();
+        
+            cidade.setNome(nomeField.getValue());
+            if (controller2.inserir(cidade) == true) {
+                Notification notification = new Notification(
+                        "Cidade salvo com sucesso.", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();

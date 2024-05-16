@@ -2,6 +2,9 @@ package app.repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import app.model.TipoEndereco;
 
@@ -25,5 +28,25 @@ public class DaoTipoEndereco {
             return false;
         }
     } 
+
+    public List<TipoEndereco> pesquisarTodos() {
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            String consulta = "SELECT * from tipoEndereco";
+            List<TipoEndereco> lista = new ArrayList<TipoEndereco>();
+            TipoEndereco tipoEndereco;
+            PreparedStatement preparedStatement = connection.prepareStatement(consulta);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                tipoEndereco = new TipoEndereco();
+                tipoEndereco.setId(resultSet.getInt("id"));
+                tipoEndereco.setNome(resultSet.getString("nome"));
+                lista.add(tipoEndereco);
+            }
+            return lista;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
 }
