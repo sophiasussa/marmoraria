@@ -64,29 +64,10 @@ public class NovoClienteView extends Composite<VerticalLayout> {
     Accordion accordion = new Accordion();
     HorizontalLayout layoutRow = new HorizontalLayout();
     FormLayout formLayout2Col = new FormLayout();
-    TextField textField2 = new TextField();
-    TextField textField3 = new TextField();
-    H5 h5 = new H5();
     VerticalLayout layoutColumn4 = new VerticalLayout();
-    FormLayout formLayout2Col2 = new FormLayout();
-    ComboBox comboBox = new ComboBox();
-    TextField textField4 = new TextField();
     Anchor link = new Anchor();
-    Button buttonSecondary = new Button();
-    H5 h52 = new H5();
     VerticalLayout layoutColumn5 = new VerticalLayout();
-    FormLayout formLayout2Col3 = new FormLayout();
-    ComboBox comboBox2 = new ComboBox();
-    ComboBox comboBox3 = new ComboBox();
-    Anchor link2 = new Anchor();
-    Anchor link3 = new Anchor();
-    FormLayout formLayout3Col = new FormLayout();
-    TextField textField5 = new TextField();
-    TextField textField6 = new TextField();
-    TextField textField7 = new TextField();
-    Button buttonSecondary2 = new Button();
     Button buttonPrimary = new Button();
-    Hr hr2 = new Hr();
 
     public NovoClienteView() {
         getContent().setWidth("100%");
@@ -105,36 +86,81 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         textField.setWidth("min-content");
         accordion.setWidth("100%");
         setAccordionSampleData(accordion);
-
-
-        
         layoutRow.setWidthFull();
         layoutColumn3.setFlexGrow(1.0, layoutRow);
         layoutRow.addClassName(Gap.MEDIUM);
         layoutRow.setWidth("100%");
         layoutRow.getStyle().set("flex-grow", "1");
         layoutRow.setAlignSelf(FlexComponent.Alignment.CENTER, formLayout2Col);
-        formLayout2Col.setWidth("100%");   
+        buttonPrimary.setText("Salvar");
+        layoutColumn3.setAlignSelf(FlexComponent.Alignment.END, buttonPrimary);
+        buttonPrimary.setWidth("min-content");
+        buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        getContent().add(layoutColumn2);
+        layoutColumn2.add(h4);
+        layoutColumn2.add(layoutColumn3);
+        layoutColumn3.add(hr);
+        layoutColumn3.add(textField);
+        layoutColumn3.add(accordion);
+        layoutColumn3.add(layoutRow);
+        layoutRow.add(formLayout2Col);
+        layoutColumn3.add(layoutColumn4);
+        layoutColumn3.add(layoutColumn5);
+        layoutColumn3.add(buttonPrimary);
+    }
+
+    private void setAccordionSampleData(Accordion accordion) {
+        RadioButtonGroup<String> radioGroup = new RadioButtonGroup<>("", "Pessoa Jurídica", "Pessoa Física");
+        VerticalLayout informacoes = new VerticalLayout();
+        informacoes.setSpacing(false);
+        informacoes.setPadding(false);
+        TextField textField2 = new TextField();
+        TextField textField3 = new TextField();
+        textField2.setVisible(false);
+        textField3.setVisible(false);
+        HorizontalLayout textFieldsLayout = new HorizontalLayout();
+        textFieldsLayout.add(textField2, textField3);
+        radioGroup.addValueChangeListener(event -> {
+            if ("Pessoa Jurídica".equals(event.getValue())) {
+                textField2.setVisible(true);
+                textField2.setPlaceholder("Insica CNPJ");
+                textField3.setVisible(true);
+                textField3.setPlaceholder("Insira Inscrição Estadual");
+            } else if ("Pessoa Física".equals(event.getValue())) {
+                textField2.setVisible(true);
+                textField2.setPlaceholder("Insica CPF");
+                textField3.setVisible(true);
+                textField3.setPlaceholder("Insira RG");
+            } else {
+                textField2.setVisible(false);
+                textField3.setVisible(false);
+            }
+        });
         
+        informacoes.add(radioGroup, textFieldsLayout);
+        accordion.add("Informações Pessoais", informacoes);
+
+        H5 h5 = new H5();
         h5.setText("Adicionar Telefones");
         h5.setWidth("max-content");
-        layoutColumn4.setWidthFull();
-        layoutColumn3.setFlexGrow(1.0, layoutColumn4);
-        layoutColumn4.setWidth("100%");
-        layoutColumn4.getStyle().set("flex-grow", "1");
-        formLayout2Col2.setWidth("100%");
+        h5.getStyle().set("margin-top", "1em");
+        h5.getStyle().set("margin-bottom", "2em");
+        FormLayout formLayout2Col2 = new FormLayout();
+        FormLayout formLayout3Col2 = new FormLayout();
+        ComboBox<TipoTelefone> comboBox = new ComboBox<>();
         comboBox.setPlaceholder("Telefone Tipo");
         comboBox.setWidth("min-content");
         setComboBoxSampleData(comboBox);
+        TextField textField4 = new TextField();
         textField4.setPlaceholder("Número");
         textField4.setWidth("min-content");
         Button buttonInsideLink = new Button("Adicionar Tipo de Telefone");
         buttonInsideLink.addClickListener(event -> openDialog());
         link.add(buttonInsideLink);
+        Button buttonSecondary = new Button();
         buttonSecondary.setText("+");
-        layoutColumn4.setAlignSelf(FlexComponent.Alignment.END, buttonSecondary);
         buttonSecondary.setWidth("min-content");
-
+        buttonSecondary.getStyle().set("margin-left", "auto");
         buttonSecondary.addClickListener(event -> {  
             TipoTelefone tipoTelefoneSelecionado = (TipoTelefone) comboBox.getValue();
             String numero = textField4.getValue();
@@ -166,8 +192,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         
                     comboBoxes.add(novoComboBox);
                     textFields.add(novoTextField);
-                    layoutColumn4.add(novoComboBox);
-                    layoutColumn4.add(novoTextField);
+                    formLayout3Col2.add(novoComboBox, novoTextField);
         
                     Telefone novoTelefone = new Telefone(Integer.parseInt(numero), tipoTelefoneSelecionado);
                     telefones.add(novoTelefone);
@@ -186,130 +211,72 @@ public class NovoClienteView extends Composite<VerticalLayout> {
                 notification.open();
             }
         });
+
+        formLayout2Col2.add(comboBox, textField4, link);
+        VerticalLayout telefone = new VerticalLayout();
+        telefone.setSpacing(false);
+        telefone.setPadding(false);
+        telefone.add(h5, formLayout2Col2, formLayout3Col2, buttonSecondary); 
+        accordion.add("Telefone", telefone);
+
+
+
+
+        H5 h52 = new H5();
         h52.setText("Adicionar Endereços");
         h52.setWidth("max-content");
-        layoutColumn5.setWidthFull();
-        layoutColumn3.setFlexGrow(1.0, layoutColumn5);
-        layoutColumn5.setWidth("100%");
-        layoutColumn5.getStyle().set("flex-grow", "1");
-        formLayout2Col3.setWidth("100%");
+        FormLayout formLayout2Col3 = new FormLayout();
+        Anchor link2 = new Anchor();
+        Anchor link3 = new Anchor();
+        FormLayout formLayout3Col = new FormLayout();
+        formLayout3Col.setResponsiveSteps(
+            new ResponsiveStep("0", 1),      
+            new ResponsiveStep("500px", 3)  
+        );
+        ComboBox comboBox2 = new ComboBox();
+        ComboBox comboBox3 = new ComboBox();
         comboBox2.setPlaceholder("Endereço Tipo");
         comboBox2.setWidth("min-content");
         setComboBoxSampleData(comboBox2);
         comboBox3.setPlaceholder("Cidade");
         comboBox3.setWidth("min-content");
         setComboBoxSampleData(comboBox3);
+
         Button buttonInsideLink2 = new Button("Adicionar Tipo de Endereço");
-        buttonInsideLink.addClickListener(event -> openDialog());
-        link2.add(buttonInsideLink);
-        Button buttonInsideLink3 = new Button("Adicionar Tipo de Endereço");
-        buttonInsideLink.addClickListener(event -> openDialog());
-        link2.add(buttonInsideLink);
-        formLayout3Col.setWidth("100%");
-        formLayout3Col.setResponsiveSteps(new ResponsiveStep("0", 1), new ResponsiveStep("250px", 2),
-                new ResponsiveStep("500px", 3));
+        buttonInsideLink2.addClickListener(event -> openDialog());
+        link2.add(buttonInsideLink2);
+        Button buttonInsideLink3 = new Button("Adicionar Cidade");
+        buttonInsideLink3.addClickListener(event -> openDialog());
+        link3.add(buttonInsideLink3);
+
+        TextField textField5 = new TextField();
+        TextField textField6 = new TextField();
+        TextField textField7 = new TextField();
+
         textField5.setPlaceholder("Logradouro");
         textField5.setWidth("min-content");
         textField6.setPlaceholder("Bairro");
         textField6.setWidth("min-content");
         textField7.setPlaceholder("Número");
         textField7.setWidth("min-content");
-        buttonSecondary2.setText("+");
-        layoutColumn5.setAlignSelf(FlexComponent.Alignment.END, buttonSecondary2);
-        buttonSecondary2.setWidth("min-content");
-        buttonPrimary.setText("Salvar");
-        layoutColumn3.setAlignSelf(FlexComponent.Alignment.END, buttonPrimary);
-        buttonPrimary.setWidth("min-content");
-        buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        getContent().add(layoutColumn2);
-        layoutColumn2.add(h4);
-        layoutColumn2.add(layoutColumn3);
-        layoutColumn3.add(hr);
-        layoutColumn3.add(textField);
-        layoutColumn3.add(accordion);
-        layoutColumn3.add(layoutRow);
-     //   layoutRow.add(radioGroup);
-        layoutRow.add(formLayout2Col);
-   //     formLayout2Col.add(textField2);
-    //    formLayout2Col.add(textField3);
-        layoutColumn3.add(h5);
-        layoutColumn3.add(layoutColumn4);
-        layoutColumn4.add(formLayout2Col2);
-        formLayout2Col2.add(comboBox);
-        formLayout2Col2.add(textField4);
-        formLayout2Col2.add(link);
-        layoutColumn4.add(buttonSecondary);
-        layoutColumn3.add(buttonSecondary); 
-        layoutColumn3.add(h52);
-        layoutColumn3.add(layoutColumn5);
-        layoutColumn5.add(formLayout2Col3);
+
         formLayout2Col3.add(comboBox2);
         formLayout2Col3.add(comboBox3);
         formLayout2Col3.add(link2);
         formLayout2Col3.add(link3);
-        layoutColumn5.add(formLayout3Col);
-        formLayout3Col.add(textField5);
-        formLayout3Col.add(textField6);
-        formLayout3Col.add(textField7);
-        layoutColumn5.add(buttonSecondary2);
-        layoutColumn3.add(buttonPrimary);
-        layoutColumn3.add(hr2);
-    }
 
-    private void setAccordionSampleData(Accordion accordion) {
-        RadioButtonGroup<String> radioGroup = new RadioButtonGroup<>("", "Pessoa Jurídica", "Pessoa Física");
-        VerticalLayout informacoes = new VerticalLayout();
-        informacoes.setSpacing(false);
-        informacoes.setPadding(false);
-        
-        TextField textField2 = new TextField();
-        TextField textField3 = new TextField();
-        textField2.setVisible(false);
-        textField3.setVisible(false);
-        
-        HorizontalLayout textFieldsLayout = new HorizontalLayout();
-        textFieldsLayout.add(textField2, textField3);
-        
-        radioGroup.addValueChangeListener(event -> {
-            if ("Pessoa Jurídica".equals(event.getValue())) {
-                textField2.setVisible(true);
-                textField2.setPlaceholder("Insica CNPJ");
-                textField3.setVisible(true);
-                textField3.setPlaceholder("Insira Inscrição Estadual");
-            } else if ("Pessoa Física".equals(event.getValue())) {
-                textField2.setVisible(true);
-                textField2.setPlaceholder("Insica CPF");
-                textField3.setVisible(true);
-                textField3.setPlaceholder("Insira RG");
-            } else {
-                textField2.setVisible(false);
-                textField3.setVisible(false);
-            }
-        });
-        
-        informacoes.add(radioGroup, textFieldsLayout);
-        accordion.add("Informações Pessoais", informacoes);
+        Button buttonSecondary2 = new Button();
+        buttonSecondary2.setText("+");
+        buttonSecondary2.setWidth("min-content");
+        buttonSecondary2.getStyle().set("margin-left", "auto");
+        formLayout3Col.add(textField5, textField6, textField7);
+        Hr hr2 = new Hr();
 
-
-        Span street = new Span("4027 Amber Lake Canyon");
-        Span zipCode = new Span("72333-5884 Cozy Nook");
-        Span city = new Span("Arkansas");
-        VerticalLayout telefone = new VerticalLayout();
-        telefone.setSpacing(false);
-        telefone.setPadding(false);
-        telefone.add(street, zipCode, city);
-        accordion.add("Telefone", telefone);
-        Span cardBrand = new Span("Mastercard");
-        Span cardNumber = new Span("1234 5678 9012 3456");
-        Span expiryDate = new Span("Expires 06/21");
-        VerticalLayout paymentLayout = new VerticalLayout();
-        paymentLayout.setSpacing(false);
-        paymentLayout.setPadding(false);
-        paymentLayout.add(cardBrand, cardNumber, expiryDate);
-        accordion.add("Payment", paymentLayout);
-    }
-
-    record SampleItem(String value, String label, Boolean disabled) {
+        VerticalLayout enderecos = new VerticalLayout();
+        enderecos.setSpacing(false);
+        enderecos.setPadding(false);
+        enderecos.add(formLayout2Col3, formLayout3Col, buttonSecondary2, hr2);
+        accordion.add("Endereço", enderecos);
     }
 
     private void setComboBoxSampleData(ComboBox<TipoTelefone> comboBox) {
