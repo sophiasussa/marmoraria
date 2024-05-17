@@ -18,6 +18,11 @@ public class Pessoa {
         this.telefones = telefones;
         this.enderecos = enderecos;
     }
+
+    public Pessoa() {
+
+    }
+
     public int getId() {
         return id;
     }

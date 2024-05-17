@@ -10,6 +10,9 @@ public class Telefone {
         this.tipoTelefone = tipoTelefone;
     }
 
+    public Telefone() {
+    }
+
     public int getId(){
         return id;
     }
