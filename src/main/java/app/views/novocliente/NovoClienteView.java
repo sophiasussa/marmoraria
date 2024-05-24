@@ -204,32 +204,57 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         buttonSecondary.setWidth("min-content");
         buttonSecondary.getStyle().set("margin-left", "auto");
         buttonSecondary.addClickListener(event -> {  
-            TipoTelefone tipoTelefoneSelecionado = (TipoTelefone) comboBox.getValue();
-            String numero = textField4.getValue();
+            TipoTelefone tipoTelefoneSelecionado = comboBox.getValue();
+            String numeroStr = textField4.getValue();
         
-            boolean camposPreenchidos = tipoTelefoneSelecionado != null && !numero.isEmpty();
-            boolean valoresUnicos = isTelefoneUnico(numero);
+            if (numeroStr.matches("\\d+")) {
+                try {
+                    int numero = Integer.parseInt(numeroStr);
         
-            if (camposPreenchidos) {
-                if (valoresUnicos) {
-                    Telefone novoTelefone = new Telefone();
-                    novoTelefone.setTipoTelefone(tipoTelefoneSelecionado);
-                    novoTelefone.setNumero(Integer.parseInt(numero));
+                    boolean camposPreenchidos = tipoTelefoneSelecionado != null && !numeroStr.isEmpty();
+                    boolean valoresUnicos = isTelefoneUnico(numero);
+
+                    if (camposPreenchidos) {
+                        if (valoresUnicos) {
+                            Telefone novoTelefone = new Telefone();
+                            novoTelefone.setTipoTelefone(tipoTelefoneSelecionado);
+                            novoTelefone.setNumero(numero);
         
-                    telefones.add(novoTelefone);
-     
-                    comboBox.clear();
-                    textField4.clear();
-                } else {
+                            telefones.add(novoTelefone);
+        
+                            comboBox.clear();
+                            textField4.clear();
+        
+                            Notification notification = new Notification(
+                                "Telefone adicionado com sucesso.", 3000);
+                            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                            notification.setPosition(Notification.Position.MIDDLE);
+                            notification.open();
+                        } else {
+                            Notification notification = new Notification(
+                                "O número de telefone já está em uso. Por favor, insira um número de telefone único.", 3000);
+                            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                            notification.setPosition(Notification.Position.MIDDLE);
+                            notification.open();
+                        }
+                    } else {
+                        Notification notification = new Notification(
+                            "Por favor, preencha todos os campos antes de adicionar mais.", 3000);
+                        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        notification.setPosition(Notification.Position.MIDDLE);
+                        notification.open();
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Número inválido: " + numeroStr);
                     Notification notification = new Notification(
-                        "O número de telefone já está em uso. Por favor, insira um número de telefone único.", 3000);
+                        "O número de telefone deve ser um valor numérico válido.", 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     notification.setPosition(Notification.Position.MIDDLE);
                     notification.open();
                 }
             } else {
                 Notification notification = new Notification(
-                    "Por favor, preencha todos os campos antes de adicionar mais.", 3000);
+                    "O número de telefone deve conter apenas dígitos.", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
@@ -360,14 +385,15 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         comboBox3.setItemLabelGenerator(cidade -> cidade.getNome());
     }
 
-    private boolean isTelefoneUnico(String numero) {
+    private boolean isTelefoneUnico(int numero) {
         for (Telefone telefone : telefones) {
-            if (telefone.getNumero() == Integer.parseInt(numero)) {
-                return false; 
+            if (telefone.getNumero() == (numero)) {
+                return false;
             }
         }
-        return true; 
+        return true;
     }
+
 
     private boolean isEnderecoNumeroUnico(String numero) {
         for (Endereco endereco : enderecos) {
