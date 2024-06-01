@@ -406,12 +406,73 @@ public class NovoClienteView extends Composite<VerticalLayout> {
 
     private void openDialog() {
         Dialog dialog = new Dialog();
+        dialog.setWidth("800px"); 
+        dialog.setHeight("600px");
 
         FormLayout formLayout = new FormLayout();
         TextField nomeField = new TextField("Nome");
-        formLayout.add(nomeField);
 
-        Button confirmarButton = new Button("Confirmar", event -> {
+        Grid<TipoTelefone> grid = new Grid<>(TipoTelefone.class);
+        grid.setColumns("nome");
+
+        List<TipoTelefone> tiposDeTelefone = controller.pesquisarTodos();
+        grid.setItems(tiposDeTelefone);
+
+        grid.addComponentColumn(tipoTelefone -> {
+            Button alterarButton = new Button("Alterar");
+            alterarButton.addClickListener(e -> {
+                nomeField.setValue(tipoTelefone.getNome());
+                alterarButton.setText("Atualizar");
+                alterarButton.addClickListener(updateEvent -> {
+                    tipoTelefone.setNome(nomeField.getValue());
+                    if (controller.alterar(tipoTelefone)) {
+                        Notification notification = new Notification(
+                                "Tipo de Telefone atualizado com sucesso.", 3000);
+                        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                        notification.setPosition(Notification.Position.MIDDLE);
+                        notification.open();
+                        
+                        tiposDeTelefone.clear();
+                        tiposDeTelefone.addAll(controller.pesquisarTodos());
+                        grid.getDataProvider().refreshAll();
+                    } else {
+                        Notification notification = new Notification(
+                                "Erro ao atualizar. Verifique se todos os dados foram preenchidos.", 3000);
+                        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        notification.setPosition(Notification.Position.MIDDLE);
+                        notification.open();
+                    }
+                });
+            });
+            return alterarButton;
+        }).setHeader("Alterar");
+    
+        grid.addComponentColumn(tipoTelefone -> {
+            Button deletarButton = new Button("Deletar");
+            deletarButton.addClickListener(e -> {
+                if (controller.excluir(tipoTelefone)) {
+                    Notification notification = new Notification(
+                            "Tipo de Telefone deletado com sucesso.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+                    
+                    tiposDeTelefone.clear();
+                    tiposDeTelefone.addAll(controller.pesquisarTodos());
+                    grid.getDataProvider().refreshAll();
+                } else {
+                    Notification notification = new Notification(
+                            "Erro ao deletar. Tente novamente.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+                }
+            });
+            return deletarButton;
+        }).setHeader("Deletar");
+    
+
+        Button confirmarButton = new Button("Salvar", event -> {
             TipoTelefone tipoTelefone = new TipoTelefone();
             tipoTelefone.setNome(nomeField.getValue());
             if (controller.inserir(tipoTelefone) == true) {
@@ -420,6 +481,10 @@ public class NovoClienteView extends Composite<VerticalLayout> {
                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
+
+                tiposDeTelefone.clear();
+                tiposDeTelefone.addAll(controller.pesquisarTodos());
+                grid.getDataProvider().refreshAll();
             } else {
                 Notification notification = new Notification(
                         "Erro ao salvar. Verifique se todos os dados foram preenchidos.", 3000);
@@ -429,10 +494,18 @@ public class NovoClienteView extends Composite<VerticalLayout> {
             }
             dialog.close();
         });
-        Button cancelarButton = new Button("Cancelar", event -> dialog.close());
+        Button cancelarButton = new Button("Fechar", event -> dialog.close());
 
-        formLayout.add(confirmarButton, cancelarButton);
-        dialog.add(formLayout);
+        HorizontalLayout buttonLayout = new HorizontalLayout(cancelarButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        buttonLayout.setPadding(false);
+        buttonLayout.setSpacing(true);
+
+        formLayout.add(nomeField, confirmarButton);
+
+        VerticalLayout dialogLayout = new VerticalLayout(formLayout, grid, buttonLayout);
+        dialog.add(dialogLayout);
         dialog.open();
     }
 

@@ -12,6 +12,18 @@ public class ControllerTipoTelefone {
         return dao.inserir(tipoTelefone);
     }
 
+    public boolean alterar(TipoTelefone tipoTelefone){
+        return dao.alterar(tipoTelefone);
+    }
+
+    public boolean excluir(TipoTelefone tipoTelefone){
+        return dao.excluir(tipoTelefone);
+    }
+
+    public TipoTelefone pesquisar(int id){
+        return dao.pesquisar(id);
+    }
+
     public List<TipoTelefone> pesquisarTodos(){
         return dao.pesquisarTodos();
     }

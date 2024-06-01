@@ -1,6 +1,10 @@
 package app.views.novousuario;
 
 import app.components.avataritem.AvatarItem;
+import app.model.Funcionario;
+import app.model.Perfil;
+import app.model.TipoEndereco;
+import app.model.TipoTelefone;
 import app.views.MainLayout;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -38,8 +42,8 @@ public class NovoUsuarioView extends Composite<VerticalLayout> {
         TextField textField = new TextField();
         PasswordField passwordField = new PasswordField();
         FormLayout formLayout2Col2 = new FormLayout();
-        ComboBox comboBox = new ComboBox();
-        ComboBox comboBox2 = new ComboBox();
+        ComboBox<Perfil> comboBox = new ComboBox();
+        ComboBox<Funcionario> comboBox2 = new ComboBox();
         RouterLink routerLink = new RouterLink();
         RouterLink routerLink2 = new RouterLink();
         Button buttonPrimary = new Button();
@@ -59,24 +63,24 @@ public class NovoUsuarioView extends Composite<VerticalLayout> {
         layoutColumn2.setWidth("100%");
         layoutColumn2.getStyle().set("flex-grow", "1");
         formLayout2Col.setWidth("100%");
-        textField.setLabel("Text field");
+        textField.setPlaceholder("Nome");
         textField.setWidth("min-content");
-        passwordField.setLabel("Password field");
+        passwordField.setPlaceholder("Senha");
         passwordField.setWidth("min-content");
         formLayout2Col2.setWidth("100%");
-        comboBox.setLabel("Combo Box");
+        comboBox.setPlaceholder("Perfil");
         comboBox.setWidth("min-content");
         setComboBoxSampleData(comboBox);
-        comboBox2.setLabel("Combo Box");
+        comboBox2.setPlaceholder("Funcionario");
         comboBox2.setWidth("min-content");
-        setComboBoxSampleData(comboBox2);
+   //     setComboBoxSampleData(comboBox2);
         routerLink.setText("Custom View");
         routerLink.setRoute(NovoUsuarioView.class);
 //        routerLink.setWidth("min-content");
         routerLink2.setText("Custom View");
         routerLink2.setRoute(NovoUsuarioView.class);
    //     routerLink2.setWidth("min-content");
-        buttonPrimary.setText("Button");
+        buttonPrimary.setText("Salvar");
         layoutColumn2.setAlignSelf(FlexComponent.Alignment.END, buttonPrimary);
         buttonPrimary.setWidth("min-content");
         buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -94,6 +98,19 @@ public class NovoUsuarioView extends Composite<VerticalLayout> {
         formLayout2Col2.add(routerLink2);
         layoutColumn2.add(buttonPrimary);
     }
+
+/* 
+    private void setComboBoxSampleData(ComboBox<Perfil> comboBox) {
+        List<Perfil> tiposTelefone = controller.pesquisarTodos();
+        comboBox.setItems(tiposTelefone);
+        comboBox.setItemLabelGenerator(tipoTelefone -> tipoTelefone.getNome());
+    }
+    
+    private void setComboBoxSampleData1(ComboBox<Funcionario> comboBox2) {
+        List<Funcionario> tiposEndereco = controller1.pesquisarTodos();
+        comboBox2.setItems(tiposEndereco);
+        comboBox2.setItemLabelGenerator(tipoEndereco -> tipoEndereco.getNome());
+    }*/
 
     private void setTabsSampleData(Tabs tabs) {
         tabs.add(new Tab("Dashboard"));
