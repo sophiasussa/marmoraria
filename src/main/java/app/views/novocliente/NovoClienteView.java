@@ -8,6 +8,7 @@ import app.data.SamplePerson;
 import app.model.Cidade;
 import app.model.Cliente;
 import app.model.Endereco;
+import app.model.Pessoa;
 import app.model.Telefone;
 import app.model.TipoEndereco;
 import app.model.TipoTelefone;
@@ -24,6 +25,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.H5;
@@ -41,6 +43,7 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
@@ -385,7 +388,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         comboBox3.setItemLabelGenerator(cidade -> cidade.getNome());
     }
 
-    private boolean isTelefoneUnico(int numero) {
+    private boolean isTelefoneUnico(long numero) {
         for (Telefone telefone : telefones) {
             if (telefone.getNumero() == (numero)) {
                 return false;
@@ -418,14 +421,24 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         List<TipoTelefone> tiposDeTelefone = controller.pesquisarTodos();
         grid.setItems(tiposDeTelefone);
 
+        Editor<TipoTelefone> editor = grid.getEditor();
+        Binder<TipoTelefone> binder = new Binder<>(TipoTelefone.class);
+        editor.setBinder(binder);
+
+        TextField nomeEditor = new TextField();
+        binder.forField(nomeEditor).bind(TipoTelefone::getNome, TipoTelefone::setNome);
+        grid.getColumnByKey("nome").setEditorComponent(nomeEditor);
+
+        grid.addItemDoubleClickListener(event -> editor.editItem(event.getItem()));
+        editor.addCloseListener(event -> grid.getDataProvider().refreshItem(event.getItem()));
+        
         grid.addComponentColumn(tipoTelefone -> {
             Button alterarButton = new Button("Alterar");
             alterarButton.addClickListener(e -> {
-                nomeField.setValue(tipoTelefone.getNome());
-                alterarButton.setText("Atualizar");
-                alterarButton.addClickListener(updateEvent -> {
-                    tipoTelefone.setNome(nomeField.getValue());
-                    if (controller.alterar(tipoTelefone)) {
+                if (editor.isOpen()) {
+                    editor.save();
+                    TipoTelefone editedTipoTelefone = editor.getItem();
+                    if (controller.alterar(editedTipoTelefone)) {
                         Notification notification = new Notification(
                                 "Tipo de Telefone atualizado com sucesso.", 3000);
                         notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -442,11 +455,19 @@ public class NovoClienteView extends Composite<VerticalLayout> {
                         notification.setPosition(Notification.Position.MIDDLE);
                         notification.open();
                     }
-                });
+                } else {
+                    editor.editItem(tipoTelefone);
+                    nomeEditor.focus();
+                }
             });
             return alterarButton;
         }).setHeader("Alterar");
-    
+        
+        editor.addSaveListener(event -> {
+            grid.getDataProvider().refreshItem(event.getItem());
+        });
+        
+
         grid.addComponentColumn(tipoTelefone -> {
             Button deletarButton = new Button("Deletar");
             deletarButton.addClickListener(e -> {
@@ -492,7 +513,6 @@ public class NovoClienteView extends Composite<VerticalLayout> {
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
             }
-            dialog.close();
         });
         Button cancelarButton = new Button("Fechar", event -> dialog.close());
 
