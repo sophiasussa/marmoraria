@@ -34,6 +34,7 @@ import com.vaadin.flow.component.html.Input;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -66,6 +67,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
     ControllerTipoEndereco controller1 = new ControllerTipoEndereco();
     ControllerCidade controller2 = new ControllerCidade();
     ControllerCliente controller3 = new ControllerCliente();
+    Grid<Telefone> grid1 = new Grid<>();
     List<Telefone> telefones = new ArrayList<>();
     List<Endereco> enderecos = new ArrayList<>();
     VerticalLayout layoutColumn2 = new VerticalLayout();
@@ -202,6 +204,31 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         Button buttonInsideLink = new Button("Adicionar Tipo de Telefone");
         buttonInsideLink.addClickListener(event -> openDialog());
         link.add(buttonInsideLink);
+        grid1.addColumn(Telefone::getNumero).setHeader("Número");
+        grid1.addColumn(telefone -> telefone.getTipoTelefone().getNome()).setHeader("Tipo de Telefone");
+        ListDataProvider<Telefone> dataProvider;
+        dataProvider = new ListDataProvider<>(telefones);
+        grid1.setDataProvider(dataProvider);
+        grid1.setVisible(false);   
+        grid1.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+
+        grid1.addComponentColumn(telefone -> {
+            Button deleteButton = new Button(new Icon(VaadinIcon.TRASH));
+            deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            deleteButton.addClickListener(event -> {
+                telefones.remove(telefone);
+                dataProvider.refreshAll();
+                updateGridHeight();
+        
+                Notification notification = new Notification(
+                    "Telefone removido com sucesso.", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            });
+            return deleteButton;
+        }).setHeader("Ações");
+        
         Button buttonSecondary = new Button();
         buttonSecondary.setText("+");
         buttonSecondary.setWidth("min-content");
@@ -209,14 +236,14 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         buttonSecondary.addClickListener(event -> {  
             TipoTelefone tipoTelefoneSelecionado = comboBox.getValue();
             String numeroStr = textField4.getValue();
-        
-            if (numeroStr.matches("\\d+")) {
+
+            if (telefones.size() < 5){
                 try {
                     int numero = Integer.parseInt(numeroStr);
         
                     boolean camposPreenchidos = tipoTelefoneSelecionado != null && !numeroStr.isEmpty();
                     boolean valoresUnicos = isTelefoneUnico(numero);
-
+    
                     if (camposPreenchidos) {
                         if (valoresUnicos) {
                             Telefone novoTelefone = new Telefone();
@@ -224,7 +251,8 @@ public class NovoClienteView extends Composite<VerticalLayout> {
                             novoTelefone.setNumero(numero);
         
                             telefones.add(novoTelefone);
-        
+                            dataProvider.refreshAll();
+    
                             comboBox.clear();
                             textField4.clear();
         
@@ -233,6 +261,9 @@ public class NovoClienteView extends Composite<VerticalLayout> {
                             notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                             notification.setPosition(Notification.Position.MIDDLE);
                             notification.open();
+    
+                            grid1.setVisible(true);
+                            updateGridHeight();
                         } else {
                             Notification notification = new Notification(
                                 "O número de telefone já está em uso. Por favor, insira um número de telefone único.", 3000);
@@ -257,17 +288,18 @@ public class NovoClienteView extends Composite<VerticalLayout> {
                 }
             } else {
                 Notification notification = new Notification(
-                    "O número de telefone deve conter apenas dígitos.", 3000);
+                    "Não é possível adicionar mais de 5 números de telefone.", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
             }
         });
+
         formLayout2Col2.add(comboBox, textField4, link);
         VerticalLayout telefone = new VerticalLayout();
         telefone.setSpacing(false);
         telefone.setPadding(false);
-        telefone.add(h5, formLayout2Col2, formLayout3Col2, buttonSecondary); 
+        telefone.add(h5, formLayout2Col2, formLayout3Col2, buttonSecondary, grid1); 
         accordion.add("Telefone", telefone);
 
         h52.setText("Adicionar Endereços");
@@ -370,6 +402,14 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         accordion.add("Endereço", enderecos);
     }
 
+    private void updateGridHeight() {
+        int rows = telefones.size();
+        int rowHeight = 50; // Altura de cada linha (ajustável conforme necessidade)
+        int headerHeight = 56; // Altura da cabeça do grid (ajustável conforme necessidade)
+    
+        grid1.setHeight((rows * rowHeight + headerHeight) + "px");
+    }
+
     private void setComboBoxSampleData(ComboBox<TipoTelefone> comboBox) {
         List<TipoTelefone> tiposTelefone = controller.pesquisarTodos();
         comboBox.setItems(tiposTelefone);
@@ -389,12 +429,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
     }
 
     private boolean isTelefoneUnico(long numero) {
-        for (Telefone telefone : telefones) {
-            if (telefone.getNumero() == (numero)) {
-                return false;
-            }
-        }
-        return true;
+        return telefones.stream().noneMatch(telefone -> telefone.getNumero() == numero);
     }
 
 
