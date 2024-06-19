@@ -2,7 +2,7 @@ package app.model;
 
 public class Telefone {
     private int id;
-    private int numero;
+    private long numero;
     private TipoTelefone tipoTelefone;
 
     public Telefone(int numero, TipoTelefone tipoTelefone) {
@@ -21,11 +21,11 @@ public class Telefone {
         this.id = id;
     }
 
-    public int getNumero(){
+    public long getNumero(){
         return numero;
     }
 
-    public void setNumero(int numero){
+    public void setNumero(long numero){
         this.numero = numero;
     }
     

@@ -62,7 +62,7 @@ public class DaoCliente {
             preparedStatement = connection.prepareStatement(insertTelefone, Statement.RETURN_GENERATED_KEYS);
     
             for (Telefone telefone : cliente.getTelefones()) {
-                preparedStatement.setInt(1, telefone.getNumero());
+                preparedStatement.setLong(1, telefone.getNumero());
                 preparedStatement.setInt(2, telefone.getTipoTelefone().getId());
                 preparedStatement.executeUpdate();
     
