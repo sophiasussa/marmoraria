@@ -13,6 +13,14 @@ public class ControllerTipoEndereco {
         return dao.inserir(tipoEndereco);
     }
 
+    public boolean alterar(TipoEndereco tipoEndereco){
+        return dao.alterar(tipoEndereco);
+    }
+
+    public boolean excluir(TipoEndereco tipoEndereco){
+        return dao.excluir(tipoEndereco);
+    }
+
     public List<TipoEndereco> pesquisarTodos(){
         return dao.pesquisarTodos();
     }

@@ -404,8 +404,8 @@ public class NovoClienteView extends Composite<VerticalLayout> {
 
     private void updateGridHeight() {
         int rows = telefones.size();
-        int rowHeight = 50; // Altura de cada linha (ajustável conforme necessidade)
-        int headerHeight = 56; // Altura da cabeça do grid (ajustável conforme necessidade)
+        int rowHeight = 50; 
+        int headerHeight = 56; 
     
         grid1.setHeight((rows * rowHeight + headerHeight) + "px");
     }
@@ -431,7 +431,6 @@ public class NovoClienteView extends Composite<VerticalLayout> {
     private boolean isTelefoneUnico(long numero) {
         return telefones.stream().noneMatch(telefone -> telefone.getNumero() == numero);
     }
-
 
     private boolean isEnderecoNumeroUnico(String numero) {
         for (Endereco endereco : enderecos) {
@@ -566,34 +565,125 @@ public class NovoClienteView extends Composite<VerticalLayout> {
 
     private void openDialog2() {
         Dialog dialog = new Dialog();
+        dialog.setWidth("800px");
+        dialog.setHeight("600px");
 
         FormLayout formLayout = new FormLayout();
         TextField nomeField = new TextField("Nome");
-        formLayout.add(nomeField);
 
-        Button confirmarButton = new Button("Confirmar", event -> {
+        Grid<TipoEndereco> grid = new Grid<>(TipoEndereco.class);
+        grid.setColumns("nome");
+
+        List<TipoEndereco> tipoEnderecos = controller1.pesquisarTodos();
+        grid.setItems(tipoEnderecos);
+
+        ListDataProvider<TipoEndereco> dataProvider = new ListDataProvider<>(tipoEnderecos);
+        grid.setDataProvider(dataProvider);
+
+        Editor<TipoEndereco> editor = grid.getEditor();
+        Binder<TipoEndereco> binder = new Binder<>(TipoEndereco.class);
+        editor.setBinder(binder);
+
+        TextField nomeEditor = new TextField();
+        binder.forField(nomeEditor).bind(TipoEndereco::getNome, TipoEndereco::setNome);
+        grid.getColumnByKey("nome").setEditorComponent(nomeEditor);
+
+        grid.addItemDoubleClickListener(event -> editor.editItem(event.getItem()));
+        editor.addCloseListener(event -> grid.getDataProvider().refreshItem(event.getItem()));
+
+
+        grid.addComponentColumn(tipoEndereco -> {
+            Button alterarButton = new Button("Alterar");
+            alterarButton.addClickListener(e -> {
+                if(editor.isOpen()){
+                    editor.save();
+                    TipoEndereco editedTipoEndereco = editor.getItem();
+                    if(controller1.alterar(editedTipoEndereco)){
+                        Notification notification = new Notification(
+                            "Tipo de Telefone atualizado com sucesso.", 3000);
+                        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                        notification.setPosition(Notification.Position.MIDDLE);
+                        notification.open();
+
+                        tipoEnderecos.clear();
+                        tipoEnderecos.addAll(controller1.pesquisarTodos());
+                        dataProvider.refreshAll(); 
+                    } else {
+                        Notification notification = new Notification(
+                            "Erro ao atualizar. Verifique se todos os dados foram preenchidos.", 3000);
+                        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        notification.setPosition(Notification.Position.MIDDLE);
+                        notification.open();
+                     }
+               } else {
+                    editor.editItem(tipoEndereco);
+                    nomeEditor.focus();
+               }
+            });
+            return alterarButton;
+        }).setHeader("Alterar");
+
+        editor.addSaveListener(event -> {
+            grid.getDataProvider().refreshItem(event.getItem());
+        });
+
+        grid.addComponentColumn(tipoEndereco -> {
+            Button deletarButton = new Button("Deletar");
+            deletarButton.addClickListener(e -> {
+                if (controller1.excluir(tipoEndereco)) {
+                    Notification notification = new Notification(
+                            "Tipo de Endereco deletado com sucesso.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+                    
+                    tipoEnderecos.clear();
+                    tipoEnderecos.addAll(controller1.pesquisarTodos());
+                    grid.getDataProvider().refreshAll();
+                } else {
+                    Notification notification = new Notification(
+                            "Erro ao deletar. Tente novamente.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+                }
+            });
+            return deletarButton;
+        }).setHeader("Deletar");
+    
+        Button confirmarButton = new Button("Salvar", event -> {
             TipoEndereco tipoEndereco = new TipoEndereco();
-        
             tipoEndereco.setNome(nomeField.getValue());
-            if (controller1.inserir(tipoEndereco) == true) {
+            if(controller1.inserir(tipoEndereco) == true){
                 Notification notification = new Notification(
-                        "Tipo de Endereço salvo com sucesso.", 3000);
+                    "Tipo de Telefone salvo com sucesso.", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
+
+                tipoEnderecos.clear();
+                tipoEnderecos.addAll(controller1.pesquisarTodos());
+                grid.getDataProvider().refreshAll();
             } else {
                 Notification notification = new Notification(
-                        "Erro ao salvar. Verifique se todos os dados foram preenchidos.", 3000);
+                    "Erro ao salvar. Verifique se todos os dados foram preenchidos.", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
             }
-            dialog.close();
         });
-        Button cancelarButton = new Button("Cancelar", event -> dialog.close());
+        Button cancelarButton = new Button("Fechar", event -> dialog.close());
 
-        formLayout.add(confirmarButton, cancelarButton);
-        dialog.add(formLayout);
+        HorizontalLayout buttonLayout = new HorizontalLayout(cancelarButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        buttonLayout.setPadding(false);
+        buttonLayout.setSpacing(true);
+        
+        formLayout.add(nomeField, confirmarButton);
+
+        VerticalLayout dialogLayout = new VerticalLayout(formLayout, grid, buttonLayout);
+        dialog.add(dialogLayout);
         dialog.open();
     }
 
