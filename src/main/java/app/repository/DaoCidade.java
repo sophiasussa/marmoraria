@@ -30,6 +30,41 @@ public class DaoCidade {
         }
     }
 
+    public boolean alterar(Cidade cidade){
+        try{
+            Connection connection = DBConnection.getInstance().getConnection();
+            String update = "UPDATE cidade set nome = ? where id = ?";
+            PreparedStatement preparedStatement1 = connection.prepareStatement(update);
+            preparedStatement1.setString(1, cidade.getNome());
+            preparedStatement1.setInt(2, cidade.getId());
+            int resultado = preparedStatement1.executeUpdate();
+            if(resultado > 0){
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e){
+            return false;
+        }
+    }
+
+    public boolean excluir(Cidade cidade){
+        try{
+            Connection connection = DBConnection.getInstance().getConnection();
+            String delete = "DELETE from cidade where id = ?";
+            PreparedStatement preparedStatement1 = connection.prepareStatement(delete);
+            preparedStatement1.setInt(1, cidade.getId());
+            int resultado = preparedStatement1.executeUpdate();
+            if(resultado > 0){
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e){
+            return false;
+        }
+    }
+
     public List<Cidade> pesquisarTodos() {
         try {
             Connection connection = DBConnection.getInstance().getConnection();

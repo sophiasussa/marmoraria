@@ -312,8 +312,8 @@ public class NovoClienteView extends Composite<VerticalLayout> {
             new ResponsiveStep("0", 1),      
             new ResponsiveStep("500px", 3)  
         );
-        ComboBox comboBox2 = new ComboBox();
-        ComboBox comboBox3 = new ComboBox();
+        ComboBox<TipoEndereco> comboBox2 = new ComboBox();
+        ComboBox<Cidade> comboBox3 = new ComboBox();
         comboBox2.setPlaceholder("Endereço Tipo");
         comboBox2.setWidth("min-content");
         setComboBoxSampleData1(comboBox2);
@@ -528,24 +528,32 @@ public class NovoClienteView extends Composite<VerticalLayout> {
     
 
         Button confirmarButton = new Button("Salvar", event -> {
-            TipoTelefone tipoTelefone = new TipoTelefone();
-            tipoTelefone.setNome(nomeField.getValue());
-            if (controller.inserir(tipoTelefone) == true) {
+            if(nomeField.isEmpty()){
                 Notification notification = new Notification(
-                        "Tipo de Telefone salvo com sucesso.", 3000);
-                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                notification.setPosition(Notification.Position.MIDDLE);
-                notification.open();
-
-                tiposDeTelefone.clear();
-                tiposDeTelefone.addAll(controller.pesquisarTodos());
-                grid.getDataProvider().refreshAll();
-            } else {
-                Notification notification = new Notification(
-                        "Erro ao salvar. Verifique se todos os dados foram preenchidos.", 3000);
+                    "Erro: O nome não pode estar vazio.", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
+            } else {
+                TipoTelefone tipoTelefone = new TipoTelefone();
+                tipoTelefone.setNome(nomeField.getValue());
+                if (controller.inserir(tipoTelefone) == true) {
+                    Notification notification = new Notification(
+                            "Tipo de Telefone salvo com sucesso.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+
+                    tiposDeTelefone.clear();
+                    tiposDeTelefone.addAll(controller.pesquisarTodos());
+                    grid.getDataProvider().refreshAll();
+                } else {
+                    Notification notification = new Notification(
+                            "Erro ao salvar. Verifique se todos os dados foram preenchidos.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+                }
             }
         });
         Button cancelarButton = new Button("Fechar", event -> dialog.close());
@@ -590,7 +598,6 @@ public class NovoClienteView extends Composite<VerticalLayout> {
 
         grid.addItemDoubleClickListener(event -> editor.editItem(event.getItem()));
         editor.addCloseListener(event -> grid.getDataProvider().refreshItem(event.getItem()));
-
 
         grid.addComponentColumn(tipoEndereco -> {
             Button alterarButton = new Button("Alterar");
@@ -652,24 +659,32 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         }).setHeader("Deletar");
     
         Button confirmarButton = new Button("Salvar", event -> {
-            TipoEndereco tipoEndereco = new TipoEndereco();
-            tipoEndereco.setNome(nomeField.getValue());
-            if(controller1.inserir(tipoEndereco) == true){
+            if(nomeField.isEmpty()){
                 Notification notification = new Notification(
-                    "Tipo de Telefone salvo com sucesso.", 3000);
-                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                notification.setPosition(Notification.Position.MIDDLE);
-                notification.open();
-
-                tipoEnderecos.clear();
-                tipoEnderecos.addAll(controller1.pesquisarTodos());
-                grid.getDataProvider().refreshAll();
-            } else {
-                Notification notification = new Notification(
-                    "Erro ao salvar. Verifique se todos os dados foram preenchidos.", 3000);
+                    "Erro: O nome não pode estar vazio.", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
+            } else {
+                TipoEndereco tipoEndereco = new TipoEndereco();
+                tipoEndereco.setNome(nomeField.getValue());
+                if(controller1.inserir(tipoEndereco) == true){
+                    Notification notification = new Notification(
+                        "Tipo de Telefone salvo com sucesso.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+    
+                    tipoEnderecos.clear();
+                    tipoEnderecos.addAll(controller1.pesquisarTodos());
+                    grid.getDataProvider().refreshAll();
+                } else {
+                    Notification notification = new Notification(
+                        "Erro ao salvar. Verifique se todos os dados foram preenchidos.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+                }
             }
         });
         Button cancelarButton = new Button("Fechar", event -> dialog.close());
@@ -689,34 +704,132 @@ public class NovoClienteView extends Composite<VerticalLayout> {
 
     private void openDialog3() {
         Dialog dialog = new Dialog();
+        dialog.setWidth("800px");
+        dialog.setHeight("600px");
 
         FormLayout formLayout = new FormLayout();
         TextField nomeField = new TextField("Nome");
-        formLayout.add(nomeField);
 
-        Button confirmarButton = new Button("Confirmar", event -> {
-            Cidade cidade = new Cidade();
-        
-            cidade.setNome(nomeField.getValue());
-            if (controller2.inserir(cidade) == true) {
+        Grid<Cidade> grid = new Grid<>(Cidade.class);
+        grid.setColumns("nome");
+
+        List<Cidade> cidades = controller2.pesquisarTodos();
+        grid.setItems(cidades);
+
+        ListDataProvider<Cidade> dataProvider = new ListDataProvider<>(cidades);
+        grid.setDataProvider(dataProvider);
+
+        Editor<Cidade> editor = grid.getEditor();
+        Binder<Cidade> binder = new Binder<>(Cidade.class);
+        editor.setBinder(binder);
+
+        TextField nomeEditor = new TextField();
+        binder.forField(nomeEditor).bind(Cidade::getNome, Cidade::setNome);
+        grid.getColumnByKey("nome").setEditorComponent(nomeEditor);
+
+        grid.addItemClickListener(event -> editor.editItem(event.getItem()));
+        editor.addCloseListener(event -> grid.getDataProvider().refreshItem(event.getItem()));
+
+        grid.addComponentColumn(cidade -> {
+            Button alterarButton = new Button("Alterar");
+            alterarButton.addClickListener(e -> {
+                if(editor.isOpen()){
+                    editor.save();
+                    Cidade editCidade = editor.getItem();
+                    if(controller2.alterar(editCidade)){
+                        Notification notification = new Notification(
+                            "Cidade atualizada com sucesso.", 3000);
+                        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                        notification.setPosition(Notification.Position.MIDDLE);
+                        notification.open();
+
+                        cidades.clear();
+                        cidades.addAll(controller2.pesquisarTodos());
+                        dataProvider.refreshAll();
+                    } else {
+                        Notification notification = new Notification(
+                            "Erro ao atualizar. Verifique se todos os dados foram preenchidos.", 3000);
+                        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        notification.setPosition(Notification.Position.MIDDLE);
+                        notification.open();
+                    }
+                } else {
+                    editor.editItem(cidade);
+                    nomeEditor.focus();
+                }
+            });
+            return alterarButton;
+        }).setHeader("Alterar");
+
+        editor.addSaveListener(event -> {
+            grid.getDataProvider().refreshItem(event.getItem());
+        });
+
+        grid.addComponentColumn(cidade -> {
+            Button deletarButton = new Button("Deletar");
+            deletarButton.addClickListener(e -> {
+                if(controller2.excluir(cidade)) {
+                    Notification notification = new Notification(
+                        "Cidade deletada com sucesso.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+
+                    cidades.clear();
+                    cidades.addAll(controller2.pesquisarTodos());
+                    grid.getDataProvider().refreshAll();
+                } else{
+                    Notification notification = new Notification(
+                        "Erro ao deletar. Tente novamente.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+                }
+            });
+            return deletarButton;
+        }).setHeader("Deletar");
+
+        Button confirmarButton = new Button("Salvar", event -> {
+            if(nomeField.isEmpty()){
                 Notification notification = new Notification(
-                        "Cidade salvo com sucesso.", 3000);
-                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                notification.setPosition(Notification.Position.MIDDLE);
-                notification.open();
-            } else {
-                Notification notification = new Notification(
-                        "Erro ao salvar. Verifique se todos os dados foram preenchidos.", 3000);
+                    "Erro: O nome não pode estar vazio.", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
+            } else {
+                Cidade cidade = new Cidade();
+                cidade.setNome(nomeField.getValue());
+                if(controller2.inserir(cidade)){
+                    Notification notification = new Notification(
+                        "Cidade salva com sucesso.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+    
+                    cidades.clear();
+                    cidades.addAll(controller2.pesquisarTodos());
+                    grid.getDataProvider().refreshAll();
+                } else {
+                    Notification notification = new Notification(
+                        "Erro ao salvar. Verifique se todos os dados foram preenchidos.", 3000);
+                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    notification.setPosition(Notification.Position.MIDDLE);
+                    notification.open();
+                }
             }
-            dialog.close();
         });
-        Button cancelarButton = new Button("Cancelar", event -> dialog.close());
+        Button cancelarButton = new Button("Fechar", event -> dialog.close());
 
-        formLayout.add(confirmarButton, cancelarButton);
-        dialog.add(formLayout);
+        HorizontalLayout buttonLayout = new HorizontalLayout(cancelarButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        buttonLayout.setPadding(false);
+        buttonLayout.setSpacing(true);
+
+        formLayout.add(nomeField, confirmarButton);
+
+        VerticalLayout dialogLayout = new VerticalLayout(formLayout, grid, buttonLayout);
+        dialog.add(dialogLayout);
         dialog.open();
     }
 

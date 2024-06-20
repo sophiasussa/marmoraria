@@ -12,6 +12,14 @@ public class ControllerCidade {
         return dao.inserir(cidade);
     }
 
+    public boolean alterar(Cidade cidade){
+        return dao.alterar(cidade);
+    }
+
+    public boolean excluir(Cidade cidade){
+        return dao.excluir(cidade);
+    }
+
     public List<Cidade> pesquisarTodos(){
         return dao.pesquisarTodos();
     }
