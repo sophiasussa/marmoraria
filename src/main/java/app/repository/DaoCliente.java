@@ -24,8 +24,8 @@ public class DaoCliente {
             String insertPessoa = "INSERT INTO pessoa (nome, cpf, rg) VALUES (?, ?, ?)";
             preparedStatement = connection.prepareStatement(insertPessoa, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, cliente.getNome());
-            preparedStatement.setInt(2, cliente.getCpf());
-            preparedStatement.setInt(3, cliente.getRg());
+            preparedStatement.setLong(2, cliente.getCpf());
+            preparedStatement.setLong(3, cliente.getRg());
             preparedStatement.executeUpdate();
     
             resultSet = preparedStatement.getGeneratedKeys();

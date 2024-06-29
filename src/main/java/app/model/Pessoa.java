@@ -5,12 +5,12 @@ import java.util.List;
 public class Pessoa {
     private int id;
     private String nome;
-    private int cpf;
-    private int rg;
+    private long cpf;
+    private long rg;
     private List<Telefone> telefones;
     private List<Endereco> enderecos;
     
-    public Pessoa(int id, String nome, int cpf, int rg, List<Telefone> telefones, List<Endereco> enderecos) {
+    public Pessoa(int id, String nome, long cpf, long rg, List<Telefone> telefones, List<Endereco> enderecos) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
@@ -37,16 +37,16 @@ public class Pessoa {
         this.nome = nome;
     }
 
-    public int getCpf() {
+    public long getCpf() {
         return cpf;
     }
-    public void setCpf(int cpf) {
+    public void setCpf(long cpf) {
         this.cpf = cpf;
     }
-    public int getRg() {
+    public long getRg() {
         return rg;
     }
-    public void setRg(int rg) {
+    public void setRg(long rg) {
         this.rg = rg;
     }
     public List<Telefone> getTelefones() {

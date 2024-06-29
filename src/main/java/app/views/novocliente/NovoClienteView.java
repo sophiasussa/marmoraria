@@ -110,6 +110,16 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         asterisco.getElement().setAttribute("title", "Informação obrigatória");
         asterisco.getStyle().set("cursor", "pointer");
 
+        textField.addFocusListener(event -> {
+            asterisco.setVisible(false);
+        });
+
+        textField.addBlurListener(event -> {
+            if (textField.isEmpty()) {
+                asterisco.setVisible(true);
+            }
+        });
+
         textField.setSuffixComponent(asterisco);
         setAccordionSampleData(accordion);
         layoutRow.setWidthFull();
@@ -131,8 +141,8 @@ public class NovoClienteView extends Composite<VerticalLayout> {
             Cliente cliente = new Cliente();
             
             cliente.setNome(textField.getValue());
-            cliente.setCpf(Integer.parseInt(textField2.getValue()));
-            cliente.setRg(Integer.parseInt(textField3.getValue()));
+            cliente.setCpf(Long.parseLong(textField2.getValue()));
+            cliente.setRg(Long.parseLong(textField3.getValue()));
             
             cliente.setEnderecos(enderecos);
             
@@ -540,7 +550,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         editor.addCloseListener(event -> grid.getDataProvider().refreshItem(event.getItem()));
         
         grid.addComponentColumn(tipoTelefone -> {
-            Button alterarButton = new Button("Alterar");
+            Button alterarButton = new Button("Alterar", new Icon(VaadinIcon.COG));
             alterarButton.addClickListener(e -> {
                 if (editor.isOpen()) {
                     editor.save();
@@ -576,7 +586,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         
 
         grid.addComponentColumn(tipoTelefone -> {
-            Button deletarButton = new Button("Deletar");
+            Button deletarButton = new Button(new Icon(VaadinIcon.TRASH));
             deletarButton.addClickListener(e -> {
                 if (controller.excluir(tipoTelefone)) {
                     Notification notification = new Notification(
@@ -631,6 +641,20 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         });
         Button cancelarButton = new Button("Fechar", event -> dialog.close());
 
+        cancelarButton.getStyle()
+            .set("background-color", "#FF0000")  
+            .set("color", "#FFFFFF")  
+            .set("border-radius", "10px")
+            .set("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)")
+            .set("cursor", "pointer");
+
+        confirmarButton.getStyle()
+            .set("background-color", "#228B22")
+            .set("color", "#FFFFFF")
+            .set("border-radius", "10px")
+            .set("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)")
+            .set("cursor", "pointer");
+
         HorizontalLayout buttonLayout = new HorizontalLayout(cancelarButton);
         buttonLayout.setWidthFull();
         buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
@@ -673,7 +697,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         editor.addCloseListener(event -> grid.getDataProvider().refreshItem(event.getItem()));
 
         grid.addComponentColumn(tipoEndereco -> {
-            Button alterarButton = new Button("Alterar");
+            Button alterarButton = new Button("Alterar", new Icon(VaadinIcon.COG));
             alterarButton.addClickListener(e -> {
                 if(editor.isOpen()){
                     editor.save();
@@ -708,7 +732,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         });
 
         grid.addComponentColumn(tipoEndereco -> {
-            Button deletarButton = new Button("Deletar");
+            Button deletarButton = new Button(new Icon(VaadinIcon.TRASH));
             deletarButton.addClickListener(e -> {
                 if (controller1.excluir(tipoEndereco)) {
                     Notification notification = new Notification(
@@ -762,6 +786,21 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         });
         Button cancelarButton = new Button("Fechar", event -> dialog.close());
 
+        cancelarButton.getStyle()
+            .set("background-color", "#FF0000")  
+            .set("color", "#FFFFFF")  
+            .set("border-radius", "10px")
+            .set("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)")
+            .set("cursor", "pointer");
+
+        confirmarButton.getStyle()
+            .set("background-color", "#228B22")
+            .set("color", "#FFFFFF")
+            .set("border-radius", "10px")
+            .set("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)")
+            .set("cursor", "pointer");
+
+
         HorizontalLayout buttonLayout = new HorizontalLayout(cancelarButton);
         buttonLayout.setWidthFull();
         buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
@@ -804,7 +843,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         editor.addCloseListener(event -> grid.getDataProvider().refreshItem(event.getItem()));
 
         grid.addComponentColumn(cidade -> {
-            Button alterarButton = new Button("Alterar");
+            Button alterarButton = new Button("Alterar", new Icon(VaadinIcon.COG));
             alterarButton.addClickListener(e -> {
                 if(editor.isOpen()){
                     editor.save();
@@ -839,7 +878,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         });
 
         grid.addComponentColumn(cidade -> {
-            Button deletarButton = new Button("Deletar");
+            Button deletarButton = new Button(new Icon(VaadinIcon.TRASH));
             deletarButton.addClickListener(e -> {
                 if(controller2.excluir(cidade)) {
                     Notification notification = new Notification(
@@ -892,6 +931,21 @@ public class NovoClienteView extends Composite<VerticalLayout> {
             }
         });
         Button cancelarButton = new Button("Fechar", event -> dialog.close());
+
+        cancelarButton.getStyle()
+            .set("background-color", "#FF0000")  
+            .set("color", "#FFFFFF")  
+            .set("border-radius", "10px")
+            .set("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)")
+            .set("cursor", "pointer");
+
+        confirmarButton.getStyle()
+            .set("background-color", "#228B22")
+            .set("color", "#FFFFFF")
+            .set("border-radius", "10px")
+            .set("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)")
+            .set("cursor", "pointer");
+
 
         HorizontalLayout buttonLayout = new HorizontalLayout(cancelarButton);
         buttonLayout.setWidthFull();
