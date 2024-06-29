@@ -15,7 +15,9 @@ import app.model.TipoTelefone;
 import app.services.SamplePersonService;
 import app.views.MainLayout;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.HtmlComponent;
 import com.vaadin.flow.component.accordion.Accordion;
+import com.vaadin.flow.component.accordion.AccordionPanel;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -68,19 +70,16 @@ public class NovoClienteView extends Composite<VerticalLayout> {
     ControllerCidade controller2 = new ControllerCidade();
     ControllerCliente controller3 = new ControllerCliente();
     Grid<Telefone> grid1 = new Grid<>();
+    Grid<Endereco> grid2 = new Grid<>();
     List<Telefone> telefones = new ArrayList<>();
     List<Endereco> enderecos = new ArrayList<>();
     VerticalLayout layoutColumn2 = new VerticalLayout();
-    H4 h4 = new H4();
     VerticalLayout layoutColumn3 = new VerticalLayout();
-    Hr hr = new Hr();
     TextField textField = new TextField();
     Accordion accordion = new Accordion();
     HorizontalLayout layoutRow = new HorizontalLayout();
     FormLayout formLayout2Col = new FormLayout();
-    VerticalLayout layoutColumn4 = new VerticalLayout();
     Anchor link = new Anchor();
-    VerticalLayout layoutColumn5 = new VerticalLayout();
     Button buttonPrimary = new Button();
     TextField textField2 = new TextField();
     TextField textField3 = new TextField();
@@ -93,16 +92,25 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         getContent().setFlexGrow(1.0, layoutColumn2);
         layoutColumn2.setWidth("100%");
         layoutColumn2.getStyle().set("flex-grow", "1");
-        h4.setText("Adicionar Novo Cliente");
-        h4.setWidth("max-content");
-        layoutColumn3.setWidthFull();
         layoutColumn2.setFlexGrow(1.0, layoutColumn3);
+        layoutColumn3.setWidthFull();
         layoutColumn3.setWidth("100%");
         layoutColumn3.getStyle().set("flex-grow", "1");
+
+
         textField.setPlaceholder("Nome");
         textField.setWidth("min-content");
         textField.setWidth("300px");
         accordion.setWidth("100%");
+        Span asterisco = new Span("*");
+        asterisco.getStyle()
+                .set("color", "red")
+                .set("position", "relative")
+                .set("left", "-230px");
+        asterisco.getElement().setAttribute("title", "Informação obrigatória");
+        asterisco.getStyle().set("cursor", "pointer");
+
+        textField.setSuffixComponent(asterisco);
         setAccordionSampleData(accordion);
         layoutRow.setWidthFull();
         layoutColumn3.setFlexGrow(1.0, layoutRow);
@@ -111,6 +119,11 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         layoutRow.getStyle().set("flex-grow", "1");
         layoutRow.setAlignSelf(FlexComponent.Alignment.CENTER, formLayout2Col);
         buttonPrimary.setText("Salvar");
+        buttonPrimary.getStyle().set("background-color", "#228B22");
+        buttonPrimary.getStyle().set("border-radius", "10px");
+        buttonPrimary.getStyle().set("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)");
+        buttonPrimary.getStyle().set("cursor", "pointer");
+
         layoutColumn3.setAlignSelf(FlexComponent.Alignment.END, buttonPrimary);
         buttonPrimary.setWidth("min-content");
         buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -121,16 +134,6 @@ public class NovoClienteView extends Composite<VerticalLayout> {
             cliente.setCpf(Integer.parseInt(textField2.getValue()));
             cliente.setRg(Integer.parseInt(textField3.getValue()));
             
-            List<Endereco> enderecos = new ArrayList<>();
-            for (Endereco enderecoo : enderecos) {
-                Endereco endereco = new Endereco();
-                endereco.setLogradouro(endereco.getLogradouro());
-                endereco.setNumero(endereco.getNumero());
-                endereco.setBairro(endereco.getBairro());
-                endereco.setCidade(endereco.getCidade()); 
-                endereco.setTipoEndereco(endereco.getTipoEndereco()); 
-                enderecos.add(endereco);
-            }
             cliente.setEnderecos(enderecos);
             
             cliente.setTelefones(telefones);
@@ -142,19 +145,26 @@ public class NovoClienteView extends Composite<VerticalLayout> {
             }
         });
         getContent().add(layoutColumn2);
-        layoutColumn2.add(h4);
         layoutColumn2.add(layoutColumn3);
-        layoutColumn3.add(hr);
         layoutColumn3.add(textField);
         layoutColumn3.add(accordion);
-        layoutColumn3.add(layoutRow);
         layoutRow.add(formLayout2Col);
-        layoutColumn3.add(layoutColumn4);
-        layoutColumn3.add(layoutColumn5);
-        layoutColumn3.add(buttonPrimary);
+        layoutColumn3.getStyle().set("border", "0.1px solid #CED4DA");
+        layoutColumn3.getStyle().set("box-shadow", "0 0 6px rgba(0, 0, 0, 0.2)");
+        layoutColumn2.add(buttonPrimary);
     }
 
     private void setAccordionSampleData(Accordion accordion) {
+        HorizontalLayout customHeader = new HorizontalLayout();
+        customHeader.setSpacing(false);
+        customHeader.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        Span headerText = new Span("Informações Pessoais");
+        Span asterisk = new Span("*");
+        asterisk.getStyle().set("color", "red").set("margin-left", "4px");
+        asterisk.getElement().setAttribute("title", "Informação obrigatória");
+        customHeader.add(headerText, asterisk);
+        
         RadioButtonGroup<String> radioGroup = new RadioButtonGroup<>("", "Pessoa Jurídica", "Pessoa Física");
         VerticalLayout informacoes = new VerticalLayout();
         informacoes.setSpacing(false);
@@ -164,6 +174,9 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         textField3.setVisible(false);
         textField2.setWidth("300px"); 
         textField3.setWidth("300px");
+
+        textField2.getStyle().set("margin-top", "20px");
+        textField3.getStyle().set("margin-top", "20px");
 
         HorizontalLayout textFieldsLayout = new HorizontalLayout();
         textFieldsLayout.add(textField2, textField3);
@@ -185,7 +198,11 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         });
         
         informacoes.add(radioGroup, textFieldsLayout);
-        accordion.add("Informações Pessoais", informacoes);
+        AccordionPanel accordionPanel = new AccordionPanel();
+        accordionPanel.setSummary(customHeader);
+        accordionPanel.add(informacoes);
+        accordion.add(accordionPanel);
+
 
         H5 h5 = new H5();
         h5.setText("Adicionar Telefones");
@@ -203,6 +220,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         textField4.setWidth("min-content");
         Button buttonInsideLink = new Button("Adicionar Tipo de Telefone");
         buttonInsideLink.addClickListener(event -> openDialog());
+        buttonInsideLink.getStyle().set("box-shadow", "0 0 4px rgba(0, 0, 0, 0.2)");
         link.add(buttonInsideLink);
         grid1.addColumn(Telefone::getNumero).setHeader("Número");
         grid1.addColumn(telefone -> telefone.getTipoTelefone().getNome()).setHeader("Tipo de Telefone");
@@ -233,6 +251,11 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         buttonSecondary.setText("+");
         buttonSecondary.setWidth("min-content");
         buttonSecondary.getStyle().set("margin-left", "auto");
+        buttonSecondary.getStyle().set("background-color", "#1A73E8");
+        buttonSecondary.getStyle().set("color", "#FFFFFF");
+        buttonSecondary.getStyle().set("border-radius", "10px");
+        buttonSecondary.getStyle().set("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)");
+        buttonSecondary.getStyle().set("cursor", "pointer");
         buttonSecondary.addClickListener(event -> {  
             TipoTelefone tipoTelefoneSelecionado = comboBox.getValue();
             String numeroStr = textField4.getValue();
@@ -322,9 +345,11 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         setComboBoxSampleData2(comboBox3);
         Button buttonInsideLink2 = new Button("Adicionar Tipo de Endereço");
         buttonInsideLink2.addClickListener(event -> openDialog2());
+        buttonInsideLink2.getStyle().set("box-shadow", "0 0 4px rgba(0, 0, 0, 0.2)");
         link2.add(buttonInsideLink2);
         Button buttonInsideLink3 = new Button("Adicionar Cidade");
         buttonInsideLink3.addClickListener(event -> openDialog3());
+        buttonInsideLink3.getStyle().set("box-shadow", "0 0 4px rgba(0, 0, 0, 0.2)");
         link3.add(buttonInsideLink3);
         TextField textField5 = new TextField();
         TextField textField6 = new TextField();
@@ -335,70 +360,119 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         textField6.setWidth("min-content");
         textField7.setPlaceholder("Número");
         textField7.setWidth("min-content");
-
         VerticalLayout titulo = new VerticalLayout();
         titulo.add(h52);
-
         formLayout2Col3.add(comboBox2);
         formLayout2Col3.add(comboBox3);
         formLayout2Col3.add(link2);
         formLayout2Col3.add(link3);
+
+        grid2 = new Grid<>(Endereco.class, false);
+        grid2.addColumn(endereco -> endereco.getCidade().getNome()).setHeader("Cidade");
+        grid2.addColumn(endereco -> endereco.getTipoEndereco().getNome()).setHeader("Tipo de Endereço");
+        grid2.addColumn(Endereco::getBairro).setHeader("Bairro");
+        grid2.addColumn(Endereco::getNumero).setHeader("Número");
+        grid2.addColumn(Endereco::getLogradouro).setHeader("Logradouro");
+
+        ListDataProvider<Endereco> dataaProvider = new ListDataProvider<>(enderecos);
+        grid2.setDataProvider(dataaProvider);
+        grid2.setVisible(false);   
+        grid2.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+
+        grid2.addComponentColumn(endereco -> {
+            Button deleteButton = new Button(new Icon(VaadinIcon.TRASH));
+            deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            deleteButton.addClickListener(event -> {
+                enderecos.remove(endereco);
+                dataaProvider.refreshAll();
+
+                Notification notification = new Notification(
+                    "Endereco removido com sucesso.", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            });
+            return deleteButton;
+        }).setHeader("Ações");
+
         Button buttonSecondary2 = new Button();
         buttonSecondary2.setText("+");
         buttonSecondary2.setWidth("min-content");
         buttonSecondary2.getStyle().set("margin-left", "auto");
+        buttonSecondary2.getStyle().set("background-color", "#1A73E8");
+        buttonSecondary2.getStyle().set("color", "#FFFFFF");
+        buttonSecondary2.getStyle().set("border-radius", "10px");
+        buttonSecondary2.getStyle().set("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)");
+        buttonSecondary2.getStyle().set("cursor", "pointer");
         buttonSecondary2.addClickListener(event -> {
-            TipoEndereco tipoEnderecoSelecionado = (TipoEndereco) comboBox2.getValue();
-            Cidade cidadeSelecionada = (Cidade) comboBox3.getValue();
+            TipoEndereco tipoEnderecoSelecionado = comboBox2.getValue();
+            Cidade cidadeSelecionada = comboBox3.getValue();
             String logradouro = textField5.getValue();
             String bairro = textField6.getValue();
-            String numero = textField7.getValue();
+            int numero = Integer.parseInt(textField7.getValue());
 
-            boolean camposPreenchidos = tipoEnderecoSelecionado != null && cidadeSelecionada != null 
-                && !logradouro.isEmpty() && !bairro.isEmpty() && !numero.isEmpty();
-            
-            boolean numeroUnico = isEnderecoNumeroUnico(numero);
-        
-            if (camposPreenchidos) {
-                if (numeroUnico) {
-                    Endereco novoEndereco = new Endereco();
-                    novoEndereco.setTipoEndereco(tipoEnderecoSelecionado);
-                    novoEndereco.setCidade(cidadeSelecionada);
-                    novoEndereco.setLogradouro(logradouro);
-                    novoEndereco.setBairro(bairro);
-                    novoEndereco.setNumero(Integer.parseInt(numero));
-        
-                    enderecos.add(novoEndereco);
-     
-                    comboBox2.clear();
-                    comboBox3.clear();
-                    textField5.clear();
-                    textField6.clear();
-                    textField7.clear();
-                } else {
+            if(enderecos.size() < 5){
+                try{
+                    boolean camposPreenchidos = tipoEnderecoSelecionado != null 
+                    && cidadeSelecionada != null 
+                    && !logradouro.isEmpty() 
+                    && !bairro.isEmpty() 
+                    && !textField7.isEmpty();
+
+                    if(camposPreenchidos){
+                        Endereco endereco = new Endereco();
+                        endereco.setTipoEndereco(tipoEnderecoSelecionado);
+                        endereco.setCidade(cidadeSelecionada);
+                        endereco.setBairro(bairro);
+                        endereco.setLogradouro(logradouro);
+                        endereco.setNumero(numero);
+
+                        enderecos.add(endereco);
+                        dataaProvider.refreshAll();
+                        comboBox2.clear();
+                        comboBox3.clear();
+                        textField5.clear();
+                        textField6.clear();
+                        textField7.clear();
+
+                        Notification notification = new Notification(
+                            "Endereco adicionado com sucesso.", 3000);
+                        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                        notification.setPosition(Notification.Position.MIDDLE);
+                        notification.open();
+
+                        updateGridHeight2();
+                        grid2.setVisible(true);
+                    } else {
+                        Notification notification = new Notification(
+                            "Por favor, preencha todos os campos antes de adicionar mais.", 3000);
+                        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        notification.setPosition(Notification.Position.MIDDLE);
+                        notification.open();
+                    }
+                } catch (Exception e){
                     Notification notification = new Notification(
-                        "O número de endereço já está em uso. Por favor, insira um número de endereço único.", 
-                        3000);
+                        "Erro", 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     notification.setPosition(Notification.Position.MIDDLE);
                     notification.open();
                 }
             } else {
                 Notification notification = new Notification(
-                    "Por favor, preencha todos os campos antes de adicionar mais.", 3000);
+                    "Não é possível adicionar mais de 5 números de telefone.", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
             }
         });
+
         formLayout3Col.getStyle().set("margin-top", "30px");
         formLayout3Col.add(textField5, textField6, textField7);
-        Hr hr2 = new Hr();
 
         VerticalLayout enderecos = new VerticalLayout();
         enderecos.setSpacing(false);
         enderecos.setPadding(false);
-        enderecos.add(titulo, formLayout2Col3, formLayout3Col, buttonSecondary2, hr2);
+        enderecos.add(titulo, formLayout2Col3, formLayout3Col, buttonSecondary2, grid2);
         accordion.add("Endereço", enderecos);
     }
 
@@ -408,6 +482,14 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         int headerHeight = 56; 
     
         grid1.setHeight((rows * rowHeight + headerHeight) + "px");
+    }
+
+    private void updateGridHeight2() {
+        int rows = enderecos.size();
+        int rowHeight = 50; 
+        int headerHeight = 56; 
+    
+        grid2.setHeight((rows * rowHeight + headerHeight) + "px");
     }
 
     private void setComboBoxSampleData(ComboBox<TipoTelefone> comboBox) {
@@ -430,15 +512,6 @@ public class NovoClienteView extends Composite<VerticalLayout> {
 
     private boolean isTelefoneUnico(long numero) {
         return telefones.stream().noneMatch(telefone -> telefone.getNumero() == numero);
-    }
-
-    private boolean isEnderecoNumeroUnico(String numero) {
-        for (Endereco endereco : enderecos) {
-            if (endereco.getNumero() == Integer.parseInt(numero)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private void openDialog() {
