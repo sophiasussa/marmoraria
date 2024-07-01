@@ -12,8 +12,12 @@ public class ControllerCliente {
         return dao.inserir(cliente);
     }
  
-    public boolean visualizar(Cliente cliente){
-        return dao.inserir(cliente);
+    public Cliente visualizar(String nomePessoa){
+        return dao.visualizar(nomePessoa);
+    }
+    
+    public Cliente visualizarcpf(String numero){
+        return dao.visualizarcpf(numero);
     }
 
     public List<Cliente> listarTodos(){

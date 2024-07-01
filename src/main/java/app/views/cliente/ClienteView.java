@@ -35,6 +35,7 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,12 +62,16 @@ public class ClienteView extends Composite<VerticalLayout> {
         minimalistGrid.setItems(clientes);
 
         minimalistGrid.addColumn(Cliente::getNome).setHeader("Nome");
-        minimalistGrid.addColumn(Cliente::getCpf).setHeader("CPF");
-        minimalistGrid.addColumn(Cliente::getRg).setHeader("RG");
+        minimalistGrid.addColumn(Cliente::getCpf).setHeader("CNPJ/CPF");
+        minimalistGrid.addColumn(Cliente::getRg).setHeader("IE/RG");
 
         minimalistGrid.addComponentColumn(cliente -> {
             Button telefoneButton = new Button(VaadinIcon.PHONE.create());
             telefoneButton.getStyle().set("border-radius", "50%");
+            telefoneButton.getStyle().set("background-color", "#9E9E9E");
+            telefoneButton.getStyle().set("color", "#FFFFFF");
+            telefoneButton.getStyle().set("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)");
+            telefoneButton.getStyle().set("cursor", "pointer");
             telefoneButton.addClickListener(event -> {
                 Dialog dialog = new Dialog();
                 dialog.add("Telefones do Cliente:");
@@ -81,6 +86,10 @@ public class ClienteView extends Composite<VerticalLayout> {
         minimalistGrid.addComponentColumn(cliente -> {
             Button enderecosButton = new Button(VaadinIcon.HOME.create());
             enderecosButton.getStyle().set("border-radius", "50%");
+            enderecosButton.getStyle().set("background-color", "#9E9E9E");
+            enderecosButton.getStyle().set("color", "#FFFFFF");
+            enderecosButton.getStyle().set("box-shadow", "0 4px 8px rgba(0, 0, 0, 0.2)");
+            enderecosButton.getStyle().set("cursor", "pointer");
             enderecosButton.addClickListener(event -> {
                 Dialog dialog = new Dialog();
                 dialog.add("Endereços do Cliente:");
@@ -123,12 +132,27 @@ public class ClienteView extends Composite<VerticalLayout> {
         layoutRow2.getStyle().set("flex-grow", "1");
         layoutRow2.setAlignItems(Alignment.END);
         layoutRow2.setJustifyContentMode(JustifyContentMode.END);
-        textField.setLabel("Text field");
         layoutRow2.setAlignSelf(FlexComponent.Alignment.CENTER, textField);
         textField.setWidth("min-content");
-        buttonPrimary.setText("Button");
+        buttonPrimary.setIcon(VaadinIcon.SEARCH.create());
+        buttonPrimary.getStyle().set("border-radius", "10px");
+        buttonPrimary.getStyle().set("box-shadow", "0 0 8px rgba(0, 0, 0, 0.2)");
         buttonPrimary.setWidth("min-content");
         buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        buttonPrimary.addClickListener(event -> {
+            String searchTerm = textField.getValue().trim();
+            
+            if (searchTerm.matches("\\d+")) {
+                Cliente resultado = controller.visualizarcpf(searchTerm);
+                minimalistGrid.setItems(resultado != null ? Collections.singletonList(resultado) : Collections.emptyList());
+            } else {
+                Cliente resultado = controller.visualizar(searchTerm);
+                minimalistGrid.setItems(resultado != null ? Collections.singletonList(resultado) : Collections.emptyList());
+            }
+        });
+        
+
         minimalistGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER,
             GridVariant.LUMO_NO_ROW_BORDERS);
         minimalistGrid.setWidth("100%");
@@ -140,6 +164,8 @@ public class ClienteView extends Composite<VerticalLayout> {
         layoutColumn2.add(layoutRow2);
         layoutRow2.add(textField);
         layoutRow2.add(buttonPrimary);
+        layoutColumn2.setAlignItems(Alignment.CENTER);
+        layoutColumn2.setJustifyContentMode(JustifyContentMode.CENTER);
         layoutColumn2.add(minimalistGrid);
     }
 
