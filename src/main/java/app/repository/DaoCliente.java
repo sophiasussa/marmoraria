@@ -5,11 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import app.model.Cidade;
 import app.model.Cliente;
 import app.model.Endereco;
 import app.model.Telefone;
+import app.model.TipoEndereco;
+import app.model.TipoTelefone;
 
 public class DaoCliente {
 
@@ -115,6 +120,160 @@ public class DaoCliente {
                 System.out.println("Erro ao fechar conexões: " + e.getMessage());
             }
         }
+    }
+ 
+    public Cliente visualizar(int idCliente) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Cliente cliente = null;
+
+        try {
+            connection = DBConnection.getInstance().getConnection();
+
+            String selectCliente = "SELECT p.nome, p.cpf, p.rg, " +
+                                "t.numero AS telefone_numero, tt.nome AS telefone_tipo, " +
+                                "e.logradouro, e.numero AS endereco_numero, e.bairro, " +
+                                "c.nome AS cidade_nome, te.nome AS endereco_tipo " +
+                                "FROM cliente c " +
+                                "JOIN pessoa p ON c.idPessoa = p.id " +
+                                "LEFT JOIN telefone t ON p.idTelefone = t.id " +
+                                "LEFT JOIN tipo_telefone tt ON t.idTipo = tt.id " +
+                                "LEFT JOIN endereco e ON p.idEndereco = e.id " +
+                                "LEFT JOIN cidade c ON e.idCidade = c.id " +
+                                "LEFT JOIN tipo_endereco te ON e.idTipo = te.id " +
+                                "WHERE c.id = ?";
+            preparedStatement = connection.prepareStatement(selectCliente);
+            preparedStatement.setInt(1, idCliente);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                cliente = new Cliente();
+                cliente.setNome(resultSet.getString("nome"));
+                cliente.setCpf(resultSet.getLong("cpf"));
+                cliente.setRg(resultSet.getLong("rg"));
+
+                Telefone telefone = new Telefone();
+                telefone.setNumero(resultSet.getLong("telefone_numero"));
+                TipoTelefone tipoTelefone = new TipoTelefone();
+                tipoTelefone.setNome(resultSet.getString("telefone_tipo"));
+                telefone.setTipoTelefone(tipoTelefone);
+
+                cliente.setTelefones(Arrays.asList(telefone));
+
+                Endereco endereco = new Endereco();
+                endereco.setLogradouro(resultSet.getString("logradouro"));
+                endereco.setNumero(resultSet.getInt("endereco_numero"));
+                endereco.setBairro(resultSet.getString("bairro"));
+
+                Cidade cidade = new Cidade();
+                cidade.setNome(resultSet.getString("cidade_nome"));
+                endereco.setCidade(cidade);
+
+                TipoEndereco tipoEndereco = new TipoEndereco();
+                tipoEndereco.setNome(resultSet.getString("endereco_tipo"));
+                endereco.setTipoEndereco(tipoEndereco);
+
+                cliente.setEnderecos(Arrays.asList(endereco));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao visualizar cliente: " + e.getMessage());
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar conexões: " + e.getMessage());
+            }
+        }
+
+        return cliente;
+    }
+
+    public List<Cliente> listarTodos() {
+        List<Cliente> clientes = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DBConnection.getInstance().getConnection();
+
+            String selectClientes = "SELECT p.nome, p.cpf, p.rg, " +
+                                    "t.numero AS telefone_numero, tt.nome AS telefone_tipo, " +
+                                    "e.logradouro, e.numero AS endereco_numero, e.bairro, " +
+                                    "c.nome AS cidade_nome, te.nome AS endereco_tipo " +
+                                    "FROM cliente cl " +
+                                    "JOIN pessoa p ON cl.idPessoa = p.id " +
+                                    "LEFT JOIN telefone t ON p.idTelefone = t.id " +
+                                    "LEFT JOIN tipoTelefone tt ON t.idTipo = tt.id " +
+                                    "LEFT JOIN endereco e ON p.idEndereco = e.id " +
+                                    "LEFT JOIN cidade c ON e.idCidade = c.id " +
+                                    "LEFT JOIN tipoEndereco te ON e.idTipo = te.id";
+            preparedStatement = connection.prepareStatement(selectClientes);
+
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Cliente cliente = new Cliente();
+                cliente.setNome(resultSet.getString("nome"));
+                cliente.setCpf(resultSet.getLong("cpf"));
+                cliente.setRg(resultSet.getLong("rg"));
+
+                Telefone telefone = new Telefone();
+                telefone.setNumero(resultSet.getLong("telefone_numero"));
+                TipoTelefone tipoTelefone = new TipoTelefone();
+                tipoTelefone.setNome(resultSet.getString("telefone_tipo"));
+                telefone.setTipoTelefone(tipoTelefone);
+
+                cliente.setTelefones(Arrays.asList(telefone));
+
+                Endereco endereco = new Endereco();
+                endereco.setLogradouro(resultSet.getString("logradouro"));
+                endereco.setNumero(resultSet.getInt("endereco_numero"));
+                endereco.setBairro(resultSet.getString("bairro"));
+
+                Cidade cidade = new Cidade();
+                cidade.setNome(resultSet.getString("cidade_nome"));
+                endereco.setCidade(cidade);
+
+                TipoEndereco tipoEndereco = new TipoEndereco();
+                tipoEndereco.setNome(resultSet.getString("endereco_tipo"));
+                endereco.setTipoEndereco(tipoEndereco);
+
+                cliente.setEnderecos(Arrays.asList(endereco));
+
+                clientes.add(cliente);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao listar clientes: " + e.getMessage());
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar conexões: " + e.getMessage());
+            }
+        }
+
+        return clientes;
     }
 
 
