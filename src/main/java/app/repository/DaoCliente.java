@@ -121,6 +121,123 @@ public class DaoCliente {
             }
         }
     }
+
+    public boolean excluirCliente(int idCliente) {
+        Connection connection = null;
+        PreparedStatement psDeleteTelefone = null;
+        PreparedStatement psDeleteEndereco = null;
+        PreparedStatement psDeleteCliente = null;
+        PreparedStatement psDeletePessoa = null;
+        boolean sucesso = false;
+    
+        try {
+            connection = DBConnection.getInstance().getConnection();
+            connection.setAutoCommit(false);
+    
+            String deleteTelefones = "DELETE FROM telefone WHERE id IN (SELECT idTelefone FROM pessoa WHERE id = (SELECT idPessoa FROM cliente WHERE id = ?))";
+            psDeleteTelefone = connection.prepareStatement(deleteTelefones);
+            psDeleteTelefone.setInt(1, idCliente);
+            psDeleteTelefone.executeUpdate();
+    
+            String deleteEnderecos = "DELETE FROM endereco WHERE id IN (SELECT idEndereco FROM pessoa WHERE id = (SELECT idPessoa FROM cliente WHERE id = ?))";
+            psDeleteEndereco = connection.prepareStatement(deleteEnderecos);
+            psDeleteEndereco.setInt(1, idCliente);
+            psDeleteEndereco.executeUpdate();
+    
+            String deleteCliente = "DELETE FROM cliente WHERE id = ?";
+            psDeleteCliente = connection.prepareStatement(deleteCliente);
+            psDeleteCliente.setInt(1, idCliente);
+            psDeleteCliente.executeUpdate();
+
+            String deletePessoa = "DELETE FROM pessoa WHERE id = (SELECT idPessoa FROM cliente WHERE id = ?)";
+            psDeletePessoa = connection.prepareStatement(deletePessoa);
+            psDeletePessoa.setInt(1, idCliente);
+            psDeletePessoa.executeUpdate();
+    
+            connection.commit();
+            sucesso = true;
+    
+        } catch (SQLException e) {
+            System.out.println("Erro ao excluir cliente: " + e.getMessage());
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackEx) {
+                    System.out.println("Erro ao fazer rollback: " + rollbackEx.getMessage());
+                }
+            }
+        } finally {
+            try {
+                if (psDeleteTelefone != null) {
+                    psDeleteTelefone.close();
+                }
+                if (psDeleteEndereco != null) {
+                    psDeleteEndereco.close();
+                }
+                if (psDeleteCliente != null) {
+                    psDeleteCliente.close();
+                }
+                if (psDeletePessoa != null) {
+                    psDeletePessoa.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar conexões: " + e.getMessage());
+            }
+        }
+    
+        return sucesso;
+    }
+
+    public int encontrarIdClientePorNome(String nomeCliente) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        int idCliente = -1; 
+    
+        try {
+            connection = DBConnection.getInstance().getConnection();
+    
+            String selectCliente = "SELECT c.id AS idCliente " +
+                                   "FROM cliente c " +
+                                   "JOIN pessoa p ON c.idPessoa = p.id " +
+                                   "WHERE p.nome = ?";
+            preparedStatement = connection.prepareStatement(selectCliente);
+            preparedStatement.setString(1, nomeCliente);
+    
+            resultSet = preparedStatement.executeQuery();
+    
+            if (resultSet.next()) {
+                idCliente = resultSet.getInt("idCliente");
+            } else {
+                System.out.println("Nenhum cliente encontrado para o nome: " + nomeCliente);
+            }
+    
+        } catch (SQLException e) {
+            System.out.println("Erro ao encontrar ID do cliente: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar conexões: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    
+        return idCliente;
+    }
+    
  
     public Cliente visualizar(String nomePessoa) {
         Connection connection = null;

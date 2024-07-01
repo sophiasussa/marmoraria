@@ -11,6 +11,14 @@ public class ControllerCliente {
     public boolean inserir(Cliente cliente){
         return dao.inserir(cliente);
     }
+
+    public boolean excluirCliente(int id) {
+        return dao.excluirCliente(id);
+    }
+
+    public int encontrarIdClientePorNome(String nomeCliente){
+        return dao.encontrarIdClientePorNome(nomeCliente);
+    } 
  
     public Cliente visualizar(String nomePessoa){
         return dao.visualizar(nomePessoa);

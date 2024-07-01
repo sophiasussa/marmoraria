@@ -21,6 +21,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
@@ -106,7 +107,20 @@ public class ClienteView extends Composite<VerticalLayout> {
             MenuItem menuItem = menuBar.addItem("...");
             SubMenu subMenu = menuItem.getSubMenu();
             subMenu.addItem("Editar");
-            subMenu.addItem("Excluir");
+            subMenu.addItem("Excluir", event -> {
+                String nomeCliente = cliente.getNome(); 
+                
+                int clienteId = controller.encontrarIdClientePorNome(nomeCliente); 
+                Notification.show("Excluindo cliente: " + clienteId);
+                
+                boolean sucesso = controller.excluirCliente(clienteId);
+                if (sucesso) {
+                    Notification.show("Cliente excluído com sucesso!");
+                    minimalistGrid.setItems(controller.listarTodos());
+                } else {
+                    Notification.show("Erro ao excluir cliente.");
+                }
+            });
             return menuBar;
         }).setHeader("Opções");
 
