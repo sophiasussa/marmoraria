@@ -143,7 +143,10 @@ public class ClienteView extends Composite<VerticalLayout> {
         buttonPrimary.addClickListener(event -> {
             String searchTerm = textField.getValue().trim();
             
-            if (searchTerm.matches("\\d+")) {
+            if (searchTerm.isEmpty()) {
+                List<Cliente> todosClientes = controller.listarTodos();
+                minimalistGrid.setItems(todosClientes);
+            } else if (searchTerm.matches("\\d+")) {
                 Cliente resultado = controller.visualizarcpf(searchTerm);
                 minimalistGrid.setItems(resultado != null ? Collections.singletonList(resultado) : Collections.emptyList());
             } else {
@@ -152,7 +155,6 @@ public class ClienteView extends Composite<VerticalLayout> {
             }
         });
         
-
         minimalistGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER,
             GridVariant.LUMO_NO_ROW_BORDERS);
         minimalistGrid.setWidth("100%");
