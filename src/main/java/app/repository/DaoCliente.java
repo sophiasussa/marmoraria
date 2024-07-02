@@ -191,6 +191,50 @@ public class DaoCliente {
         return sucesso;
     }
 
+    public boolean atualizarCliente(Cliente cliente) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        boolean sucesso = false;
+    
+        try {
+            connection = DBConnection.getInstance().getConnection();
+            connection.setAutoCommit(false);
+    
+            String updatePessoa = "UPDATE pessoa SET nome = ?, cpf = ?, rg = ? WHERE id = ?";
+            preparedStatement = connection.prepareStatement(updatePessoa);
+            preparedStatement.setString(1, cliente.getNome());
+            preparedStatement.setLong(2, cliente.getCpf());
+            preparedStatement.setLong(3, cliente.getRg());
+          //  preparedStatement.setInt(4, cliente.getIdPessoa());
+            preparedStatement.executeUpdate();
+    
+            connection.commit();
+            sucesso = true;
+        } catch (SQLException e) {
+            System.out.println("Erro ao atualizar cliente: " + e.getMessage());
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackEx) {
+                    System.out.println("Erro ao fazer rollback: " + rollbackEx.getMessage());
+                }
+            }
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar conexões: " + e.getMessage());
+            }
+        }
+    
+        return sucesso;
+    }
+
     public int encontrarIdClientePorNome(String nomeCliente) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;

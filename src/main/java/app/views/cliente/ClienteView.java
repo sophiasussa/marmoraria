@@ -1,10 +1,17 @@
 package app.views.cliente;
 
 import app.components.avataritem.AvatarItem;
+import app.controller.ControllerCidade;
 import app.controller.ControllerCliente;
+import app.controller.ControllerTipoEndereco;
+import app.controller.ControllerTipoTelefone;
 import app.data.SamplePerson;
+import app.model.Cidade;
 import app.model.Cliente;
+import app.model.Endereco;
 import app.model.Telefone;
+import app.model.TipoEndereco;
+import app.model.TipoTelefone;
 import app.services.SamplePersonService;
 import app.views.MainLayout;
 import com.vaadin.flow.component.Composite;
@@ -36,6 +43,7 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,17 +56,20 @@ import org.springframework.data.domain.PageRequest;
 @RouteAlias(value = "", layout = MainLayout.class)
 @Uses(Icon.class)
 public class ClienteView extends Composite<VerticalLayout> {
+    Grid<Cliente> minimalistGrid = new Grid(Cliente.class, false);
+    ControllerCliente controller = new ControllerCliente(); 
+    ControllerTipoTelefone controller1 = new ControllerTipoTelefone();
+    ControllerCidade controller2 = new ControllerCidade();
+    ControllerTipoEndereco controller3 = new ControllerTipoEndereco();
 
     public ClienteView() {
         HorizontalLayout layoutRow = new HorizontalLayout();
-        ControllerCliente controller = new ControllerCliente(); 
         Tabs tabs = new Tabs();
         AvatarItem avatarItem = new AvatarItem();
         VerticalLayout layoutColumn2 = new VerticalLayout();
         HorizontalLayout layoutRow2 = new HorizontalLayout();
         TextField textField = new TextField();
         Button buttonPrimary = new Button();
-        Grid<Cliente> minimalistGrid = new Grid(Cliente.class, false);
         List<Cliente> clientes = controller.listarTodos(); 
         minimalistGrid.setItems(clientes);
 
@@ -106,7 +117,7 @@ public class ClienteView extends Composite<VerticalLayout> {
             MenuBar menuBar = new MenuBar();
             MenuItem menuItem = menuBar.addItem("...");
             SubMenu subMenu = menuItem.getSubMenu();
-            subMenu.addItem("Editar");
+            subMenu.addItem("Editar", event -> abrirDialogoEdicao(cliente));
             subMenu.addItem("Excluir", event -> {
                 String nomeCliente = cliente.getNome(); 
                 
@@ -196,4 +207,189 @@ public class ClienteView extends Composite<VerticalLayout> {
         avatarItem.setDescription("Endocrinologist");
         avatarItem.setAvatar(new Avatar("Aria Bailey"));
     }
+
+    private void abrirDialogoEdicao(Cliente cliente) {
+        Dialog dialog = new Dialog();
+        VerticalLayout layout = new VerticalLayout();
+        dialog.setWidth("1200px");
+        dialog.setHeight("1000px");
+
+        TextField nomeField = new TextField("Nome");
+        nomeField.setValue(cliente.getNome());
+
+        TextField cpfField = new TextField("CPF");
+        cpfField.setValue(String.valueOf(cliente.getCpf()));
+
+        TextField rgField = new TextField("RG");
+        rgField.setValue(String.valueOf(cliente.getRg()));
+
+        HorizontalLayout camposLayout = new HorizontalLayout(nomeField, cpfField, rgField);
+        layout.add(camposLayout);
+
+        List<Telefone> telefonesTemp = new ArrayList<>(cliente.getTelefones());    
+        Grid<Telefone> telefoneGrid = new Grid<>(Telefone.class);
+        telefoneGrid.setItems(telefonesTemp);
+        telefoneGrid.removeAllColumns();
+        telefoneGrid.addColumn(Telefone::getNumero).setHeader("Número");
+        telefoneGrid.addColumn(telefone -> telefone.getTipoTelefone().getNome()).setHeader("Tipo");
+        updateGridHeight(telefoneGrid, telefonesTemp.size());
+
+        layout.add(telefoneGrid);
+
+        Button addTelefoneButton = new Button("+");
+        VerticalLayout telefoneAdicionarLayout = new VerticalLayout();
+        ComboBox<TipoTelefone> tipoTelefoneComboBox = new ComboBox<>("Tipo");
+        setComboBoxSampleData(tipoTelefoneComboBox);
+        TextField novoTelefoneField = new TextField("Número");
+        Button inserirTelefoneButton = new Button("Inserir");
+
+        inserirTelefoneButton.addClickListener(event -> {
+            if (telefonesTemp.size() < 5) {
+                Telefone novoTelefone = new Telefone();
+                novoTelefone.setNumero(Long.parseLong(novoTelefoneField.getValue()));
+                novoTelefone.setTipoTelefone(tipoTelefoneComboBox.getValue());
+                telefonesTemp.add(novoTelefone);
+    
+                telefoneGrid.setItems(telefonesTemp);
+                telefoneGrid.getDataProvider().refreshAll();
+                updateGridHeight(telefoneGrid, telefonesTemp.size());
+                telefoneAdicionarLayout.setVisible(false);
+                addTelefoneButton.setVisible(true);
+                
+                tipoTelefoneComboBox.clear();
+                novoTelefoneField.clear();
+            } else {
+                Notification.show("Você já adicionou 5 telefones.");
+                tipoTelefoneComboBox.clear();
+                novoTelefoneField.clear();
+            }
+        });
+
+        telefoneAdicionarLayout.add(new HorizontalLayout(tipoTelefoneComboBox, novoTelefoneField), inserirTelefoneButton);
+        telefoneAdicionarLayout.setVisible(false);
+        layout.add(telefoneAdicionarLayout);
+
+        addTelefoneButton.addClickListener(event -> {
+            addTelefoneButton.setVisible(false);
+            telefoneAdicionarLayout.setVisible(true);
+        });
+
+        layout.add(addTelefoneButton);
+
+        List<Endereco> enderecosTemp = new ArrayList<>(cliente.getEnderecos());
+        Grid<Endereco> enderecoGrid = new Grid<>(Endereco.class);
+        enderecoGrid.setItems(enderecosTemp);
+        enderecoGrid.removeAllColumns();
+        enderecoGrid.addColumn(Endereco::getLogradouro).setHeader("Logradouro");
+        enderecoGrid.addColumn(Endereco::getNumero).setHeader("Número");
+        enderecoGrid.addColumn(Endereco::getBairro).setHeader("Bairro");
+        enderecoGrid.addColumn(endereco -> endereco.getCidade().getNome()).setHeader("Cidade");
+        enderecoGrid.addColumn(endereco -> endereco.getTipoEndereco().getNome()).setHeader("Tipo");
+        updateGridHeight(enderecoGrid, enderecosTemp.size());
+
+        layout.add(enderecoGrid);
+
+        Button addEnderecoButton = new Button("+");
+        VerticalLayout enderecoAdicionarLayout = new VerticalLayout();
+        ComboBox<TipoEndereco> tipoEnderecoComboBox = new ComboBox<>("Tipo de Endereço");
+        setComboBoxSampleData1(tipoEnderecoComboBox);
+        ComboBox<Cidade> cidadeComboBox = new ComboBox<>("Cidade");
+        setComboBoxSampleData2(cidadeComboBox);
+
+        TextField logradouroField = new TextField("Logradouro");
+        TextField numeroField = new TextField("Número");
+        TextField bairroField = new TextField("Bairro");
+        Button inserirEnderecoButton = new Button("Inserir");
+
+        inserirEnderecoButton.addClickListener(event -> {
+            if (enderecosTemp.size() < 5) {
+                Endereco novoEndereco = new Endereco();
+                novoEndereco.setLogradouro(logradouroField.getValue());
+                novoEndereco.setNumero(Integer.parseInt(numeroField.getValue()));
+                novoEndereco.setBairro(bairroField.getValue());
+                novoEndereco.setCidade(cidadeComboBox.getValue());
+                novoEndereco.setTipoEndereco(tipoEnderecoComboBox.getValue());
+                enderecosTemp.add(novoEndereco);
+    
+                enderecoGrid.setItems(enderecosTemp);
+                enderecoGrid.getDataProvider().refreshAll();
+                updateGridHeight(enderecoGrid, enderecosTemp.size());
+                enderecoAdicionarLayout.setVisible(false);
+                addEnderecoButton.setVisible(true);
+                
+                tipoEnderecoComboBox.clear();
+                cidadeComboBox.clear();
+                logradouroField.clear();
+                numeroField.clear();
+                bairroField.clear();
+            } else {
+                Notification.show("Você já adicionou 5 endereços.");
+                tipoEnderecoComboBox.clear();
+                cidadeComboBox.clear();
+                logradouroField.clear();
+                numeroField.clear();
+                bairroField.clear();
+            }
+        });
+
+        enderecoAdicionarLayout.add(new HorizontalLayout(tipoEnderecoComboBox, cidadeComboBox),
+                                    new HorizontalLayout(logradouroField, numeroField, bairroField),
+                                    inserirEnderecoButton);
+        enderecoAdicionarLayout.setVisible(false);
+        layout.add(enderecoAdicionarLayout);
+
+        addEnderecoButton.addClickListener(event -> {
+            addEnderecoButton.setVisible(false);
+            enderecoAdicionarLayout.setVisible(true);
+        });
+
+        layout.add(addEnderecoButton);
+
+        Button salvarButton = new Button("Salvar", event -> {
+            cliente.setNome(nomeField.getValue());
+            cliente.setCpf(Long.parseLong(cpfField.getValue()));
+            cliente.setRg(Long.parseLong(rgField.getValue()));
+            cliente.setTelefones(telefonesTemp);
+            cliente.setEnderecos(enderecosTemp);
+       /*    boolean sucesso = controller.atualizarCliente(cliente);
+            if (sucesso) {
+                Notification.show("Cliente atualizado com sucesso!");
+                minimalistGrid.setItems(controller.listarTodos());
+                dialog.close();
+            } else {
+                Notification.show("Erro ao atualizar cliente.");
+            }*/
+        });
+
+        Button cancelarButton = new Button("Cancelar", event -> dialog.close());
+
+        layout.add(new HorizontalLayout(salvarButton, cancelarButton));
+        dialog.add(layout);
+        dialog.open();
+    }
+
+    private void updateGridHeight(Grid<?> grid, int rows) {
+        int rowHeight = 40;
+        int headerHeight = 56;
+        grid.setHeight((rows * rowHeight + headerHeight) + "px");
+    }
+
+    private void setComboBoxSampleData(ComboBox<TipoTelefone> comboBox) {
+        List<TipoTelefone> tiposTelefone = controller1.pesquisarTodos();
+        comboBox.setItems(tiposTelefone);
+        comboBox.setItemLabelGenerator(TipoTelefone::getNome);
+    }
+
+    private void setComboBoxSampleData1(ComboBox<TipoEndereco> comboBox) {
+        List<TipoEndereco> tiposEndereco = controller3.pesquisarTodos();
+        comboBox.setItems(tiposEndereco);
+        comboBox.setItemLabelGenerator(TipoEndereco::getNome);
+    }
+
+    private void setComboBoxSampleData2(ComboBox<Cidade> comboBox) {
+        List<Cidade> cidades = controller2.pesquisarTodos();
+        comboBox.setItems(cidades);
+        comboBox.setItemLabelGenerator(Cidade::getNome);
+    }
+
 }
