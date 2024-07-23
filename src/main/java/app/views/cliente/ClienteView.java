@@ -351,14 +351,15 @@ public class ClienteView extends Composite<VerticalLayout> {
             cliente.setRg(Long.parseLong(rgField.getValue()));
             cliente.setTelefones(telefonesTemp);
             cliente.setEnderecos(enderecosTemp);
-       /*    boolean sucesso = controller.atualizarCliente(cliente);
+            System.out.println(enderecosTemp);
+            boolean sucesso = controller.atualizarCliente(cliente);
             if (sucesso) {
                 Notification.show("Cliente atualizado com sucesso!");
                 minimalistGrid.setItems(controller.listarTodos());
                 dialog.close();
             } else {
                 Notification.show("Erro ao atualizar cliente.");
-            }*/
+            }
         });
 
         Button cancelarButton = new Button("Cancelar", event -> dialog.close());
@@ -374,22 +375,22 @@ public class ClienteView extends Composite<VerticalLayout> {
         grid.setHeight((rows * rowHeight + headerHeight) + "px");
     }
 
-    private void setComboBoxSampleData(ComboBox<TipoTelefone> comboBox) {
+    private void setComboBoxSampleData(ComboBox<TipoTelefone> tipoTelefoneComboBox) {
         List<TipoTelefone> tiposTelefone = controller1.pesquisarTodos();
-        comboBox.setItems(tiposTelefone);
-        comboBox.setItemLabelGenerator(TipoTelefone::getNome);
+        tipoTelefoneComboBox.setItems(tiposTelefone);
+        tipoTelefoneComboBox.setItemLabelGenerator(TipoTelefone::getNome);
     }
 
-    private void setComboBoxSampleData1(ComboBox<TipoEndereco> comboBox) {
+    private void setComboBoxSampleData1(ComboBox<TipoEndereco> tipoEnderecoComboBox) {
         List<TipoEndereco> tiposEndereco = controller3.pesquisarTodos();
-        comboBox.setItems(tiposEndereco);
-        comboBox.setItemLabelGenerator(TipoEndereco::getNome);
+        tipoEnderecoComboBox.setItems(tiposEndereco);
+        tipoEnderecoComboBox.setItemLabelGenerator(TipoEndereco::getNome);
     }
 
-    private void setComboBoxSampleData2(ComboBox<Cidade> comboBox) {
+    private void setComboBoxSampleData2(ComboBox<Cidade> cidadeComboBox) {
         List<Cidade> cidades = controller2.pesquisarTodos();
-        comboBox.setItems(cidades);
-        comboBox.setItemLabelGenerator(Cidade::getNome);
+        cidadeComboBox.setItems(cidades);
+        cidadeComboBox.setItemLabelGenerator(Cidade::getNome);
     }
 
 }

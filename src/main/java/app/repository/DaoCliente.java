@@ -205,11 +205,73 @@ public class DaoCliente {
             preparedStatement.setString(1, cliente.getNome());
             preparedStatement.setLong(2, cliente.getCpf());
             preparedStatement.setLong(3, cliente.getRg());
-          //  preparedStatement.setInt(4, cliente.getIdPessoa());
+            preparedStatement.setInt(4, cliente.getId());
             preparedStatement.executeUpdate();
+    
+            String updateTelefone = "UPDATE telefone SET numero = ?, idTipo = ? WHERE id = ?";
+            String insertTelefone = "INSERT INTO telefone (numero, idTipo) VALUES (?, ?)";
+    
+            for (Telefone telefone : cliente.getTelefones()) {
+                if (telefone.getId() != 0) {
+                    preparedStatement = connection.prepareStatement(updateTelefone);
+                    preparedStatement.setLong(1, telefone.getNumero());
+                    preparedStatement.setInt(2, telefone.getTipoTelefone().getId());
+                    preparedStatement.setInt(3, telefone.getId());
+                    preparedStatement.executeUpdate();
+                } else {
+                    boolean telefoneExiste = verificarTelefoneExiste(connection, telefone.getNumero());
+            
+                    if (!telefoneExiste) {
+                        preparedStatement = connection.prepareStatement(insertTelefone, Statement.RETURN_GENERATED_KEYS);
+                        preparedStatement.setLong(1, telefone.getNumero());
+                        preparedStatement.setInt(2, telefone.getTipoTelefone().getId());
+                        preparedStatement.executeUpdate();
+            
+                        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                        if (generatedKeys.next()) {
+                            int telefoneId = generatedKeys.getInt(1);
+                            telefone.setId(telefoneId);
+                        }
+                    } else {
+                        System.out.println("Telefone já existe: " + telefone.getNumero());
+                    }
+                }
+            }
+
+            String updateEndereco = "UPDATE endereco SET logradouro = ?, numero = ?, bairro = ?, idCidade = ?, idTipo = ? WHERE id = ?";
+            String insertEndereco = "INSERT INTO endereco (logradouro, numero, bairro, idCidade, idTipo) VALUES (?, ?, ?, ?, ?)";
+    
+            for (Endereco endereco : cliente.getEnderecos()) {
+                System.out.println("Valor de idTipo: " + endereco.getTipoEndereco().getId());
+                if (endereco.getId() != 0) {
+                    preparedStatement = connection.prepareStatement(updateEndereco);
+                    preparedStatement.setString(1, endereco.getLogradouro());
+                    preparedStatement.setInt(2, endereco.getNumero());
+                    preparedStatement.setString(3, endereco.getBairro());
+                    preparedStatement.setInt(4, endereco.getCidade().getId());
+                    preparedStatement.setInt(5, endereco.getTipoEndereco().getId());
+                    preparedStatement.setInt(6, endereco.getId());
+                    preparedStatement.executeUpdate();
+                } else {
+                    preparedStatement = connection.prepareStatement(insertEndereco, Statement.RETURN_GENERATED_KEYS);
+                    preparedStatement.setString(1, endereco.getLogradouro());
+                    preparedStatement.setInt(2, endereco.getNumero());
+                    preparedStatement.setString(3, endereco.getBairro());
+                    preparedStatement.setInt(4, endereco.getCidade().getId());
+                    preparedStatement.setInt(5, endereco.getTipoEndereco().getId());
+                    preparedStatement.executeUpdate();
+    
+                    ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                    if (generatedKeys.next()) {
+                        int enderecoId = generatedKeys.getInt(1);
+                        endereco.setId(enderecoId);
+                    }
+                }
+            }
     
             connection.commit();
             sucesso = true;
+    
         } catch (SQLException e) {
             System.out.println("Erro ao atualizar cliente: " + e.getMessage());
             if (connection != null) {
@@ -225,6 +287,7 @@ public class DaoCliente {
                     preparedStatement.close();
                 }
                 if (connection != null) {
+                    connection.setAutoCommit(true);
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -234,6 +297,22 @@ public class DaoCliente {
     
         return sucesso;
     }
+    
+
+    private boolean verificarTelefoneExiste(Connection connection, long numero) throws SQLException {
+        String query = "SELECT COUNT(*) FROM telefone WHERE numero = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setLong(1, numero);
+        ResultSet resultSet = preparedStatement.executeQuery();
+    
+        if (resultSet.next()) {
+            int count = resultSet.getInt(1);
+            return count > 0;
+        }
+    
+        return false;
+    }
+    
 
     public int encontrarIdClientePorNome(String nomeCliente) {
         Connection connection = null;

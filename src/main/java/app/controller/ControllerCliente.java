@@ -16,6 +16,10 @@ public class ControllerCliente {
         return dao.excluirCliente(id);
     }
 
+    public boolean atualizarCliente(Cliente cliente){
+        return dao.atualizarCliente(cliente);
+    }
+
     public int encontrarIdClientePorNome(String nomeCliente){
         return dao.encontrarIdClientePorNome(nomeCliente);
     } 
