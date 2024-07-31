@@ -72,6 +72,15 @@ public class MainLayout extends AppLayout {
         SideNav registro = new SideNav();
 
         registro.setLabel("Registros");
+
+        registro.getStyle().set("font-weight", "bold");
+ //       registro.getStyle().set("color", "var(--lumo-primary-text-color)");
+        registro.getStyle().set("background-color", "var(--lumo-primary-color-10pct)");
+        registro.getStyle().set("padding", "var(--lumo-space-s)");
+        registro.getStyle().set("border-radius", "var(--lumo-border-radius)");
+        registro.getStyle().set("display", "block");
+        registro.getStyle().set("margin", "var(--lumo-space-xs) 0");
+
         registro.setCollapsible(true);
         registro.setExpanded(false);
         registro.addItem(new SideNavItem("Cliente", ClienteView.class, VaadinIcon.GROUP.create()));

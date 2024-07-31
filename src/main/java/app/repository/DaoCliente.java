@@ -18,76 +18,81 @@ import app.model.TipoTelefone;
 
 public class DaoCliente {
 
+
     public boolean inserir(Cliente cliente) {
         Connection connection = null;
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatementPessoa = null;
+        PreparedStatement preparedStatementEndereco = null;
+        PreparedStatement preparedStatementTelefone = null;
+        PreparedStatement preparedStatementUpdate = null;
         ResultSet resultSet = null;
+        
         try {
             connection = DBConnection.getInstance().getConnection();
             connection.setAutoCommit(false); 
     
             String insertPessoa = "INSERT INTO pessoa (nome, cpf, rg) VALUES (?, ?, ?)";
-            preparedStatement = connection.prepareStatement(insertPessoa, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, cliente.getNome());
-            preparedStatement.setLong(2, cliente.getCpf());
-            preparedStatement.setLong(3, cliente.getRg());
-            preparedStatement.executeUpdate();
+            preparedStatementPessoa = connection.prepareStatement(insertPessoa, Statement.RETURN_GENERATED_KEYS);
+            preparedStatementPessoa.setString(1, cliente.getNome());
+            preparedStatementPessoa.setLong(2, cliente.getCpf());
+            preparedStatementPessoa.setLong(3, cliente.getRg());
+            preparedStatementPessoa.executeUpdate();
     
-            resultSet = preparedStatement.getGeneratedKeys();
+            resultSet = preparedStatementPessoa.getGeneratedKeys();
             int idPessoa = 0;
             if (resultSet.next()) {
                 idPessoa = resultSet.getInt(1);
             }
     
             String insertEndereco = "INSERT INTO endereco (idTipo, idCidade, logradouro, numero, bairro) VALUES (?, ?, ?, ?, ?)";
-            preparedStatement = connection.prepareStatement(insertEndereco, Statement.RETURN_GENERATED_KEYS);
+            preparedStatementEndereco = connection.prepareStatement(insertEndereco, Statement.RETURN_GENERATED_KEYS);
     
             for (Endereco endereco : cliente.getEnderecos()) {
-                preparedStatement.setInt(1, endereco.getTipoEndereco().getId());
-                preparedStatement.setInt(2, endereco.getCidade().getId());
-                preparedStatement.setString(3, endereco.getLogradouro());
-                preparedStatement.setInt(4, endereco.getNumero());
-                preparedStatement.setString(5, endereco.getBairro());
-                preparedStatement.executeUpdate();
-
-                resultSet = preparedStatement.getGeneratedKeys();
+                preparedStatementEndereco.setInt(1, endereco.getTipoEndereco().getId());
+                preparedStatementEndereco.setInt(2, endereco.getCidade().getId());
+                preparedStatementEndereco.setString(3, endereco.getLogradouro());
+                preparedStatementEndereco.setInt(4, endereco.getNumero());
+                preparedStatementEndereco.setString(5, endereco.getBairro());
+                preparedStatementEndereco.executeUpdate();
+    
+                resultSet = preparedStatementEndereco.getGeneratedKeys();
                 int idEndereco = 0;
                 if (resultSet.next()) {
                     idEndereco = resultSet.getInt(1);
                 }
     
                 String updateEndereco = "UPDATE pessoa SET idEndereco = ? WHERE id = ?";
-                preparedStatement = connection.prepareStatement(updateEndereco);
-                preparedStatement.setInt(1, idEndereco);
-                preparedStatement.setInt(2, idPessoa);
-                preparedStatement.executeUpdate();
+                preparedStatementUpdate = connection.prepareStatement(updateEndereco);
+                preparedStatementUpdate.setInt(1, idEndereco);
+                preparedStatementUpdate.setInt(2, idPessoa);
+                preparedStatementUpdate.executeUpdate();
             }
     
             String insertTelefone = "INSERT INTO telefone (numero, idTipo) VALUES (?, ?)";
-            preparedStatement = connection.prepareStatement(insertTelefone, Statement.RETURN_GENERATED_KEYS);
+            preparedStatementTelefone = connection.prepareStatement(insertTelefone, Statement.RETURN_GENERATED_KEYS);
     
             for (Telefone telefone : cliente.getTelefones()) {
-                preparedStatement.setLong(1, telefone.getNumero());
-                preparedStatement.setInt(2, telefone.getTipoTelefone().getId());
-                preparedStatement.executeUpdate();
+                preparedStatementTelefone.setLong(1, telefone.getNumero());
+                preparedStatementTelefone.setInt(2, telefone.getTipoTelefone().getId());
+                preparedStatementTelefone.executeUpdate();
     
-                resultSet = preparedStatement.getGeneratedKeys();
+                resultSet = preparedStatementTelefone.getGeneratedKeys();
                 int idTelefone = 0;
                 if (resultSet.next()) {
                     idTelefone = resultSet.getInt(1);
                 }
     
                 String updateTelefone = "UPDATE pessoa SET idTelefone = ? WHERE id = ?";
-                preparedStatement = connection.prepareStatement(updateTelefone);
-                preparedStatement.setInt(1, idTelefone);
-                preparedStatement.setInt(2, idPessoa);
-                preparedStatement.executeUpdate();
+                preparedStatementUpdate = connection.prepareStatement(updateTelefone);
+                preparedStatementUpdate.setInt(1, idTelefone);
+                preparedStatementUpdate.setInt(2, idPessoa);
+                preparedStatementUpdate.executeUpdate();
             }
     
             String insertCliente = "INSERT INTO cliente (idPessoa) VALUES (?)";
-            preparedStatement = connection.prepareStatement(insertCliente);
-            preparedStatement.setInt(1, idPessoa);
-            int resultado = preparedStatement.executeUpdate();
+            preparedStatementUpdate = connection.prepareStatement(insertCliente);
+            preparedStatementUpdate.setInt(1, idPessoa);
+            int resultado = preparedStatementUpdate.executeUpdate();
     
             connection.commit();
             
@@ -109,8 +114,17 @@ public class DaoCliente {
                 if (resultSet != null) {
                     resultSet.close();
                 }
-                if (preparedStatement != null) {
-                    preparedStatement.close();
+                if (preparedStatementPessoa != null) {
+                    preparedStatementPessoa.close();
+                }
+                if (preparedStatementEndereco != null) {
+                    preparedStatementEndereco.close();
+                }
+                if (preparedStatementTelefone != null) {
+                    preparedStatementTelefone.close();
+                }
+                if (preparedStatementUpdate != null) {
+                    preparedStatementUpdate.close();
                 }
                 if (connection != null) {
                     connection.setAutoCommit(true);
@@ -532,14 +546,15 @@ public class DaoCliente {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-
+    
         try {
             connection = DBConnection.getInstance().getConnection();
-
-            String selectClientes = "SELECT p.nome, p.cpf, p.rg, " +
-                                    "t.numero AS telefone_numero, tt.nome AS telefone_tipo, " +
-                                    "e.logradouro, e.numero AS endereco_numero, e.bairro, " +
-                                    "c.nome AS cidade_nome, te.nome AS endereco_tipo " +
+    
+            String selectClientes = "SELECT p.id AS pessoa_id, p.nome, p.cpf, p.rg, " +
+                                    "t.id AS telefone_id, t.numero AS telefone_numero, tt.nome AS telefone_tipo, " +
+                                    "e.id AS endereco_id, e.logradouro, e.numero AS endereco_numero, e.bairro, " +
+                                    "c.id AS cidade_id, c.nome AS cidade_nome, " +
+                                    "te.id AS tipo_endereco_id, te.nome AS endereco_tipo " +
                                     "FROM cliente cl " +
                                     "JOIN pessoa p ON cl.idPessoa = p.id " +
                                     "LEFT JOIN telefone t ON p.idTelefone = t.id " +
@@ -548,41 +563,46 @@ public class DaoCliente {
                                     "LEFT JOIN cidade c ON e.idCidade = c.id " +
                                     "LEFT JOIN tipoEndereco te ON e.idTipo = te.id";
             preparedStatement = connection.prepareStatement(selectClientes);
-
+    
             resultSet = preparedStatement.executeQuery();
-
+    
             while (resultSet.next()) {
                 Cliente cliente = new Cliente();
+                cliente.setId(resultSet.getInt("pessoa_id"));
                 cliente.setNome(resultSet.getString("nome"));
                 cliente.setCpf(resultSet.getLong("cpf"));
                 cliente.setRg(resultSet.getLong("rg"));
-
+    
                 Telefone telefone = new Telefone();
+                telefone.setId(resultSet.getInt("telefone_id"));
                 telefone.setNumero(resultSet.getLong("telefone_numero"));
                 TipoTelefone tipoTelefone = new TipoTelefone();
                 tipoTelefone.setNome(resultSet.getString("telefone_tipo"));
                 telefone.setTipoTelefone(tipoTelefone);
-
+    
                 cliente.setTelefones(Arrays.asList(telefone));
-
+    
                 Endereco endereco = new Endereco();
+                endereco.setId(resultSet.getInt("endereco_id"));
                 endereco.setLogradouro(resultSet.getString("logradouro"));
                 endereco.setNumero(resultSet.getInt("endereco_numero"));
                 endereco.setBairro(resultSet.getString("bairro"));
-
+    
                 Cidade cidade = new Cidade();
+                cidade.setId(resultSet.getInt("cidade_id"));
                 cidade.setNome(resultSet.getString("cidade_nome"));
                 endereco.setCidade(cidade);
-
+    
                 TipoEndereco tipoEndereco = new TipoEndereco();
+                tipoEndereco.setId(resultSet.getInt("tipo_endereco_id"));
                 tipoEndereco.setNome(resultSet.getString("endereco_tipo"));
                 endereco.setTipoEndereco(tipoEndereco);
-
+    
                 cliente.setEnderecos(Arrays.asList(endereco));
-
+    
                 clientes.add(cliente);
             }
-
+    
         } catch (SQLException e) {
             System.out.println("Erro ao listar clientes: " + e.getMessage());
         } finally {
@@ -600,9 +620,8 @@ public class DaoCliente {
                 System.out.println("Erro ao fechar conexões: " + e.getMessage());
             }
         }
-
+    
         return clientes;
     }
-
-
+    
 }

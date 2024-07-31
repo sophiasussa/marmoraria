@@ -73,6 +73,11 @@ public class ClienteView extends Composite<VerticalLayout> {
         List<Cliente> clientes = controller.listarTodos(); 
         minimalistGrid.setItems(clientes);
 
+        Grid.Column<Cliente> idColumn = minimalistGrid.addColumn(Cliente::getId).setHeader("ID").setKey("id");
+            if (idColumn != null) {
+                idColumn.setVisible(false);
+        }
+
         minimalistGrid.addColumn(Cliente::getNome).setHeader("Nome");
         minimalistGrid.addColumn(Cliente::getCpf).setHeader("CNPJ/CPF");
         minimalistGrid.addColumn(Cliente::getRg).setHeader("IE/RG");
@@ -280,6 +285,7 @@ public class ClienteView extends Composite<VerticalLayout> {
         Grid<Endereco> enderecoGrid = new Grid<>(Endereco.class);
         enderecoGrid.setItems(enderecosTemp);
         enderecoGrid.removeAllColumns();
+
         enderecoGrid.addColumn(Endereco::getLogradouro).setHeader("Logradouro");
         enderecoGrid.addColumn(Endereco::getNumero).setHeader("Número");
         enderecoGrid.addColumn(Endereco::getBairro).setHeader("Bairro");
