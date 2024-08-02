@@ -1,6 +1,6 @@
 package app.model;
 
-public class Agenda {
+public class Tarefa {
     private int id;
     private String titulo;
     private String decricao;

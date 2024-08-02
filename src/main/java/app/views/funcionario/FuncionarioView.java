@@ -1,4 +1,4 @@
-package app.views.tarefasgerais;
+package app.views.funcionario;
 
 import app.components.avataritem.AvatarItem;
 import app.data.SamplePerson;
@@ -10,8 +10,9 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -26,21 +27,20 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
-@PageTitle("TarefasGerais")
-@Route(value = "my-view7", layout = MainLayout.class)
+@PageTitle("Funcionarios")
+@Route(value = "my-view5", layout = MainLayout.class)
 @Uses(Icon.class)
-public class TarefasGeraisView extends Composite<VerticalLayout> {
+public class FuncionarioView extends Composite<VerticalLayout> {
 
-    public TarefasGeraisView() {
-        HorizontalLayout layoutRow = new HorizontalLayout();
+    public FuncionarioView() {
+     HorizontalLayout layoutRow = new HorizontalLayout();
         Tabs tabs = new Tabs();
         AvatarItem avatarItem = new AvatarItem();
         VerticalLayout layoutColumn2 = new VerticalLayout();
         HorizontalLayout layoutRow2 = new HorizontalLayout();
         TextField textField = new TextField();
         Button buttonPrimary = new Button();
-        Grid multiSelectGrid = new Grid(SamplePerson.class);
-        Hr hr = new Hr();
+        Grid minimalistGrid = new Grid(SamplePerson.class);
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         layoutRow.setWidthFull();
@@ -64,14 +64,16 @@ public class TarefasGeraisView extends Composite<VerticalLayout> {
         layoutRow2.setAlignItems(Alignment.END);
         layoutRow2.setJustifyContentMode(JustifyContentMode.END);
         textField.setLabel("Text field");
+        layoutRow2.setAlignSelf(FlexComponent.Alignment.CENTER, textField);
         textField.setWidth("min-content");
         buttonPrimary.setText("Button");
         buttonPrimary.setWidth("min-content");
         buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        multiSelectGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-        multiSelectGrid.setWidth("100%");
-        multiSelectGrid.getStyle().set("flex-grow", "0");
-        setGridSampleData(multiSelectGrid);
+        minimalistGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER,
+                GridVariant.LUMO_NO_ROW_BORDERS);
+        minimalistGrid.setWidth("100%");
+        minimalistGrid.getStyle().set("flex-grow", "0");
+        setGridSampleData(minimalistGrid);
         getContent().add(layoutRow);
         layoutRow.add(tabs);
         layoutRow.add(avatarItem);
@@ -79,8 +81,7 @@ public class TarefasGeraisView extends Composite<VerticalLayout> {
         layoutColumn2.add(layoutRow2);
         layoutRow2.add(textField);
         layoutRow2.add(buttonPrimary);
-        layoutColumn2.add(multiSelectGrid);
-        layoutColumn2.add(hr);
+        layoutColumn2.add(minimalistGrid);
     }
 
     private void setTabsSampleData(Tabs tabs) {

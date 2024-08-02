@@ -1,4 +1,4 @@
-package app.views.tarefasgeraisconcluido;
+package app.views.tarefageral;
 
 import app.components.avataritem.AvatarItem;
 import app.data.SamplePerson;
@@ -26,12 +26,12 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
-@PageTitle("TarefasGeraisConcluido")
-@Route(value = "my-view11", layout = MainLayout.class)
+@PageTitle("TarefaGeral")
+@Route(value = "my-view7", layout = MainLayout.class)
 @Uses(Icon.class)
-public class TarefasGeraisConcluidoView extends Composite<VerticalLayout> {
+public class TarefaGeralView extends Composite<VerticalLayout> {
 
-    public TarefasGeraisConcluidoView() {
+    public TarefaGeralView() {
         HorizontalLayout layoutRow = new HorizontalLayout();
         Tabs tabs = new Tabs();
         AvatarItem avatarItem = new AvatarItem();
@@ -47,7 +47,7 @@ public class TarefasGeraisConcluidoView extends Composite<VerticalLayout> {
         getContent().setFlexGrow(1.0, layoutRow);
         layoutRow.addClassName(Gap.MEDIUM);
         layoutRow.setWidth("100%");
-        layoutRow.setHeight("49px");
+        layoutRow.getStyle().set("flex-grow", "1");
         tabs.setWidth("100%");
         setTabsSampleData(tabs);
         avatarItem.setWidth("min-content");
@@ -60,7 +60,7 @@ public class TarefasGeraisConcluidoView extends Composite<VerticalLayout> {
         layoutColumn2.setFlexGrow(1.0, layoutRow2);
         layoutRow2.addClassName(Gap.MEDIUM);
         layoutRow2.setWidth("100%");
-        layoutRow2.setHeight("77px");
+        layoutRow2.getStyle().set("flex-grow", "1");
         layoutRow2.setAlignItems(Alignment.END);
         layoutRow2.setJustifyContentMode(JustifyContentMode.END);
         textField.setLabel("Text field");

@@ -1,4 +1,4 @@
-package app.views.addtarefasgerais;
+package app.views.addtarefageral;
 
 import app.views.MainLayout;
 import com.vaadin.flow.component.Composite;
@@ -22,9 +22,9 @@ import java.util.List;
 @PageTitle("AddTarefasGerais")
 @Route(value = "my-view12", layout = MainLayout.class)
 @Uses(Icon.class)
-public class AddTarefasGeraisView extends Composite<VerticalLayout> {
+public class AddTarefaGeralView extends Composite<VerticalLayout> {
 
-    public AddTarefasGeraisView() {
+    public AddTarefaGeralView() {
         VerticalLayout layoutColumn2 = new VerticalLayout();
         FormLayout formLayout2Col = new FormLayout();
         TextField textField = new TextField();

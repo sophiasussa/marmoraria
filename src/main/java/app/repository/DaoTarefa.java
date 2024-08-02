@@ -3,11 +3,11 @@ package app.repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-import app.model.Agenda;
+import app.model.Tarefa;
 
-public class DaoTarefas {
+public class DaoTarefa {
 
-    public boolean inserir(Agenda tarefa){
+    public boolean inserir(Tarefa tarefa){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             String insert = "INSERT INTO tarefasGerais (titulo, descricao, dataHora, estado, idUsuario) VALUE (?,?,?,?,?)";

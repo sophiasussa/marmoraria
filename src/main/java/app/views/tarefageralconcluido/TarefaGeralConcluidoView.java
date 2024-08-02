@@ -1,4 +1,4 @@
-package app.views.funcionarios;
+package app.views.tarefageralconcluido;
 
 import app.components.avataritem.AvatarItem;
 import app.data.SamplePerson;
@@ -10,9 +10,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -27,27 +26,28 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
-@PageTitle("Funcionarios")
-@Route(value = "my-view5", layout = MainLayout.class)
+@PageTitle("TarefaGeralConcluido")
+@Route(value = "my-view11", layout = MainLayout.class)
 @Uses(Icon.class)
-public class FuncionariosView extends Composite<VerticalLayout> {
+public class TarefaGeralConcluidoView extends Composite<VerticalLayout> {
 
-    public FuncionariosView() {
-     HorizontalLayout layoutRow = new HorizontalLayout();
+    public TarefaGeralConcluidoView() {
+        HorizontalLayout layoutRow = new HorizontalLayout();
         Tabs tabs = new Tabs();
         AvatarItem avatarItem = new AvatarItem();
         VerticalLayout layoutColumn2 = new VerticalLayout();
         HorizontalLayout layoutRow2 = new HorizontalLayout();
         TextField textField = new TextField();
         Button buttonPrimary = new Button();
-        Grid minimalistGrid = new Grid(SamplePerson.class);
+        Grid multiSelectGrid = new Grid(SamplePerson.class);
+        Hr hr = new Hr();
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         layoutRow.setWidthFull();
         getContent().setFlexGrow(1.0, layoutRow);
         layoutRow.addClassName(Gap.MEDIUM);
         layoutRow.setWidth("100%");
-        layoutRow.getStyle().set("flex-grow", "1");
+        layoutRow.setHeight("49px");
         tabs.setWidth("100%");
         setTabsSampleData(tabs);
         avatarItem.setWidth("min-content");
@@ -60,20 +60,18 @@ public class FuncionariosView extends Composite<VerticalLayout> {
         layoutColumn2.setFlexGrow(1.0, layoutRow2);
         layoutRow2.addClassName(Gap.MEDIUM);
         layoutRow2.setWidth("100%");
-        layoutRow2.getStyle().set("flex-grow", "1");
+        layoutRow2.setHeight("77px");
         layoutRow2.setAlignItems(Alignment.END);
         layoutRow2.setJustifyContentMode(JustifyContentMode.END);
         textField.setLabel("Text field");
-        layoutRow2.setAlignSelf(FlexComponent.Alignment.CENTER, textField);
         textField.setWidth("min-content");
         buttonPrimary.setText("Button");
         buttonPrimary.setWidth("min-content");
         buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        minimalistGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER,
-                GridVariant.LUMO_NO_ROW_BORDERS);
-        minimalistGrid.setWidth("100%");
-        minimalistGrid.getStyle().set("flex-grow", "0");
-        setGridSampleData(minimalistGrid);
+        multiSelectGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+        multiSelectGrid.setWidth("100%");
+        multiSelectGrid.getStyle().set("flex-grow", "0");
+        setGridSampleData(multiSelectGrid);
         getContent().add(layoutRow);
         layoutRow.add(tabs);
         layoutRow.add(avatarItem);
@@ -81,7 +79,8 @@ public class FuncionariosView extends Composite<VerticalLayout> {
         layoutColumn2.add(layoutRow2);
         layoutRow2.add(textField);
         layoutRow2.add(buttonPrimary);
-        layoutColumn2.add(minimalistGrid);
+        layoutColumn2.add(multiSelectGrid);
+        layoutColumn2.add(hr);
     }
 
     private void setTabsSampleData(Tabs tabs) {
