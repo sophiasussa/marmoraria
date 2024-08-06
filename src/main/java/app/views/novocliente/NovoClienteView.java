@@ -89,6 +89,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         layoutColumn2.setWidthFull();
+
         getContent().setFlexGrow(1.0, layoutColumn2);
         layoutColumn2.setWidth("100%");
         layoutColumn2.getStyle().set("flex-grow", "1");
@@ -97,8 +98,8 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         layoutColumn3.setWidth("100%");
         layoutColumn3.getStyle().set("flex-grow", "1");
 
-
         textField.setPlaceholder("Nome");
+        textField.getStyle().set("border-radius", "10px");
         textField.setWidth("min-content");
         textField.setWidth("300px");
         accordion.setWidth("100%");
@@ -156,11 +157,15 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         });
         getContent().add(layoutColumn2);
         layoutColumn2.add(layoutColumn3);
+
         layoutColumn3.add(textField);
         layoutColumn3.add(accordion);
         layoutRow.add(formLayout2Col);
         layoutColumn3.getStyle().set("border", "0.1px solid #CED4DA");
         layoutColumn3.getStyle().set("box-shadow", "0 0 6px rgba(0, 0, 0, 0.2)");
+        layoutColumn3.getStyle().set("border-radius", "10px");
+        layoutColumn2.getStyle().set("padding", "0 80px");
+
         layoutColumn2.add(buttonPrimary);
     }
 
@@ -182,6 +187,8 @@ public class NovoClienteView extends Composite<VerticalLayout> {
 
         textField2.setVisible(false);
         textField3.setVisible(false);
+        textField2.getStyle().set("border-radius", "10px");
+        textField3.getStyle().set("border-radius", "10px");
         textField2.setWidth("300px"); 
         textField3.setWidth("300px");
 
@@ -227,6 +234,7 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         setComboBoxSampleData(comboBox);
         TextField textField4 = new TextField();
         textField4.setPlaceholder("Número");
+        textField4.getStyle().set("border-radius", "10px");
         textField4.setWidth("min-content");
         Button buttonInsideLink = new Button("Adicionar Tipo de Telefone");
         buttonInsideLink.addClickListener(event -> openDialog());
@@ -348,9 +356,11 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         ComboBox<TipoEndereco> comboBox2 = new ComboBox();
         ComboBox<Cidade> comboBox3 = new ComboBox();
         comboBox2.setPlaceholder("Endereço Tipo");
+        comboBox2.getStyle().set("border-radius", "10px");
         comboBox2.setWidth("min-content");
         setComboBoxSampleData1(comboBox2);
         comboBox3.setPlaceholder("Cidade");
+        comboBox3.getStyle().set("border-radius", "10px");
         comboBox3.setWidth("min-content");
         setComboBoxSampleData2(comboBox3);
         Button buttonInsideLink2 = new Button("Adicionar Tipo de Endereço");
@@ -365,10 +375,13 @@ public class NovoClienteView extends Composite<VerticalLayout> {
         TextField textField6 = new TextField();
         TextField textField7 = new TextField();
         textField5.setPlaceholder("Logradouro");
+        textField5.getStyle().set("border-radius", "10px");
         textField5.setWidth("min-content");
         textField6.setPlaceholder("Bairro");
+        textField6.getStyle().set("border-radius", "10px");
         textField6.setWidth("min-content");
         textField7.setPlaceholder("Número");
+        textField6.getStyle().set("border-radius", "10px");
         textField7.setWidth("min-content");
         VerticalLayout titulo = new VerticalLayout();
         titulo.add(h52);

@@ -90,6 +90,24 @@ public class MainLayout extends AppLayout {
 
         return registro;
     }
+    /* 
+    <vaadin-side-nav style="width:100%">
+    <vaadin-side-nav-item path="/messages">
+        <vaadin-icon icon="vaadin:envelope" slot="prefix"></vaadin-icon>
+        Messages
+        <vaadin-side-nav-item path="/inbox" slot="children">
+        <vaadin-icon icon="vaadin:inbox" slot="prefix"></vaadin-icon>
+        Inbox
+        </vaadin-side-nav-item>
+        <vaadin-side-nav-item path="/sent" slot="children">
+        <vaadin-icon icon="vaadin:paperplane" slot="prefix"></vaadin-icon>
+        Sent
+        </vaadin-side-nav-item>
+        <vaadin-side-nav-item path="/trash" slot="children">
+        <vaadin-icon icon="vaadin:trash" slot="prefix"></vaadin-icon>
+        Trash
+        </vaadin-side-nav-item>
+    </vaadin-side-nav-item>*/
 
     private SideNav createNavegation2(){
         SideNav nav = new SideNav();

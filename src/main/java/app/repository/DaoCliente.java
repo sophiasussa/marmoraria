@@ -147,26 +147,39 @@ public class DaoCliente {
         try {
             connection = DBConnection.getInstance().getConnection();
             connection.setAutoCommit(false);
-    
-            String deleteTelefones = "DELETE FROM telefone WHERE id IN (SELECT idTelefone FROM pessoa WHERE id = (SELECT idPessoa FROM cliente WHERE id = ?))";
-            psDeleteTelefone = connection.prepareStatement(deleteTelefones);
-            psDeleteTelefone.setInt(1, idCliente);
-            psDeleteTelefone.executeUpdate();
-    
-            String deleteEnderecos = "DELETE FROM endereco WHERE id IN (SELECT idEndereco FROM pessoa WHERE id = (SELECT idPessoa FROM cliente WHERE id = ?))";
-            psDeleteEndereco = connection.prepareStatement(deleteEnderecos);
-            psDeleteEndereco.setInt(1, idCliente);
-            psDeleteEndereco.executeUpdate();
-    
-            String deleteCliente = "DELETE FROM cliente WHERE id = ?";
-            psDeleteCliente = connection.prepareStatement(deleteCliente);
-            psDeleteCliente.setInt(1, idCliente);
-            psDeleteCliente.executeUpdate();
 
-            String deletePessoa = "DELETE FROM pessoa WHERE id = (SELECT idPessoa FROM cliente WHERE id = ?)";
-            psDeletePessoa = connection.prepareStatement(deletePessoa);
-            psDeletePessoa.setInt(1, idCliente);
-            psDeletePessoa.executeUpdate();
+            String selectIdPessoa = "SELECT idPessoa FROM cliente WHERE id = ?";
+            PreparedStatement psSelectIdPessoa = connection.prepareStatement(selectIdPessoa);
+            psSelectIdPessoa.setInt(1, idCliente);
+            ResultSet rs = psSelectIdPessoa.executeQuery();
+            int idPessoa = -1;
+            if (rs.next()) {
+                idPessoa = rs.getInt("idPessoa");
+            }
+            rs.close();
+            psSelectIdPessoa.close();
+    
+            if (idPessoa != -1) {
+                String deleteCliente = "DELETE FROM cliente WHERE id = ?";
+                psDeleteCliente = connection.prepareStatement(deleteCliente);
+                psDeleteCliente.setInt(1, idCliente);
+                psDeleteCliente.executeUpdate();
+
+                String deleteTelefones = "DELETE FROM telefone WHERE id IN (SELECT idTelefone FROM pessoa WHERE id = ?)";
+                psDeleteTelefone = connection.prepareStatement(deleteTelefones);
+                psDeleteTelefone.setInt(1, idPessoa);
+                psDeleteTelefone.executeUpdate();
+
+                String deleteEnderecos = "DELETE FROM endereco WHERE id IN (SELECT idEndereco FROM pessoa WHERE id = ?)";
+                psDeleteEndereco = connection.prepareStatement(deleteEnderecos);
+                psDeleteEndereco.setInt(1, idPessoa);
+                psDeleteEndereco.executeUpdate();
+
+                String deletePessoa = "DELETE FROM pessoa WHERE id = ?";
+                psDeletePessoa = connection.prepareStatement(deletePessoa);
+                psDeletePessoa.setInt(1, idPessoa);
+                psDeletePessoa.executeUpdate();
+            }
     
             connection.commit();
             sucesso = true;
@@ -204,10 +217,15 @@ public class DaoCliente {
     
         return sucesso;
     }
+    
 
     public boolean atualizarCliente(Cliente cliente) {
         Connection connection = null;
-        PreparedStatement preparedStatement = null;
+        PreparedStatement psUpdatePessoa = null;
+        PreparedStatement psUpdateTelefone = null;
+        PreparedStatement psInsertTelefone = null;
+        PreparedStatement psUpdateEndereco = null;
+        PreparedStatement psInsertEndereco = null;
         boolean sucesso = false;
     
         try {
@@ -215,33 +233,37 @@ public class DaoCliente {
             connection.setAutoCommit(false);
     
             String updatePessoa = "UPDATE pessoa SET nome = ?, cpf = ?, rg = ? WHERE id = ?";
-            preparedStatement = connection.prepareStatement(updatePessoa);
-            preparedStatement.setString(1, cliente.getNome());
-            preparedStatement.setLong(2, cliente.getCpf());
-            preparedStatement.setLong(3, cliente.getRg());
-            preparedStatement.setInt(4, cliente.getId());
-            preparedStatement.executeUpdate();
+            psUpdatePessoa = connection.prepareStatement(updatePessoa);
+            psUpdatePessoa.setString(1, cliente.getNome());
+            psUpdatePessoa.setLong(2, cliente.getCpf());
+            psUpdatePessoa.setLong(3, cliente.getRg());
+            psUpdatePessoa.setInt(4, cliente.getId());
+            psUpdatePessoa.executeUpdate();
     
             String updateTelefone = "UPDATE telefone SET numero = ?, idTipo = ? WHERE id = ?";
             String insertTelefone = "INSERT INTO telefone (numero, idTipo) VALUES (?, ?)";
+            psUpdateTelefone = connection.prepareStatement(updateTelefone);
+            psInsertTelefone = connection.prepareStatement(insertTelefone, Statement.RETURN_GENERATED_KEYS);
     
             for (Telefone telefone : cliente.getTelefones()) {
+                if (!verificarTipoTelefoneExiste(connection, telefone.getTipoTelefone().getId())) {
+                    System.out.println("Tipo de telefone não existe: " + telefone.getTipoTelefone().getId());
+                    throw new SQLException("Tipo de telefone não existe: " + telefone.getTipoTelefone().getId());
+                }
+    
                 if (telefone.getId() != 0) {
-                    preparedStatement = connection.prepareStatement(updateTelefone);
-                    preparedStatement.setLong(1, telefone.getNumero());
-                    preparedStatement.setInt(2, telefone.getTipoTelefone().getId());
-                    preparedStatement.setInt(3, telefone.getId());
-                    preparedStatement.executeUpdate();
+                    psUpdateTelefone.setLong(1, telefone.getNumero());
+                    psUpdateTelefone.setInt(2, telefone.getTipoTelefone().getId());
+                    psUpdateTelefone.setInt(3, telefone.getId());
+                    psUpdateTelefone.executeUpdate();
                 } else {
                     boolean telefoneExiste = verificarTelefoneExiste(connection, telefone.getNumero());
-            
                     if (!telefoneExiste) {
-                        preparedStatement = connection.prepareStatement(insertTelefone, Statement.RETURN_GENERATED_KEYS);
-                        preparedStatement.setLong(1, telefone.getNumero());
-                        preparedStatement.setInt(2, telefone.getTipoTelefone().getId());
-                        preparedStatement.executeUpdate();
-            
-                        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                        psInsertTelefone.setLong(1, telefone.getNumero());
+                        psInsertTelefone.setInt(2, telefone.getTipoTelefone().getId());
+                        psInsertTelefone.executeUpdate();
+    
+                        ResultSet generatedKeys = psInsertTelefone.getGeneratedKeys();
                         if (generatedKeys.next()) {
                             int telefoneId = generatedKeys.getInt(1);
                             telefone.setId(telefoneId);
@@ -251,31 +273,30 @@ public class DaoCliente {
                     }
                 }
             }
-
+    
             String updateEndereco = "UPDATE endereco SET logradouro = ?, numero = ?, bairro = ?, idCidade = ?, idTipo = ? WHERE id = ?";
             String insertEndereco = "INSERT INTO endereco (logradouro, numero, bairro, idCidade, idTipo) VALUES (?, ?, ?, ?, ?)";
+            psUpdateEndereco = connection.prepareStatement(updateEndereco);
+            psInsertEndereco = connection.prepareStatement(insertEndereco, Statement.RETURN_GENERATED_KEYS);
     
             for (Endereco endereco : cliente.getEnderecos()) {
-                System.out.println("Valor de idTipo: " + endereco.getTipoEndereco().getId());
                 if (endereco.getId() != 0) {
-                    preparedStatement = connection.prepareStatement(updateEndereco);
-                    preparedStatement.setString(1, endereco.getLogradouro());
-                    preparedStatement.setInt(2, endereco.getNumero());
-                    preparedStatement.setString(3, endereco.getBairro());
-                    preparedStatement.setInt(4, endereco.getCidade().getId());
-                    preparedStatement.setInt(5, endereco.getTipoEndereco().getId());
-                    preparedStatement.setInt(6, endereco.getId());
-                    preparedStatement.executeUpdate();
+                    psUpdateEndereco.setString(1, endereco.getLogradouro());
+                    psUpdateEndereco.setInt(2, endereco.getNumero());
+                    psUpdateEndereco.setString(3, endereco.getBairro());
+                    psUpdateEndereco.setInt(4, endereco.getCidade().getId());
+                    psUpdateEndereco.setInt(5, endereco.getTipoEndereco().getId());
+                    psUpdateEndereco.setInt(6, endereco.getId());
+                    psUpdateEndereco.executeUpdate();
                 } else {
-                    preparedStatement = connection.prepareStatement(insertEndereco, Statement.RETURN_GENERATED_KEYS);
-                    preparedStatement.setString(1, endereco.getLogradouro());
-                    preparedStatement.setInt(2, endereco.getNumero());
-                    preparedStatement.setString(3, endereco.getBairro());
-                    preparedStatement.setInt(4, endereco.getCidade().getId());
-                    preparedStatement.setInt(5, endereco.getTipoEndereco().getId());
-                    preparedStatement.executeUpdate();
+                    psInsertEndereco.setString(1, endereco.getLogradouro());
+                    psInsertEndereco.setInt(2, endereco.getNumero());
+                    psInsertEndereco.setString(3, endereco.getBairro());
+                    psInsertEndereco.setInt(4, endereco.getCidade().getId());
+                    psInsertEndereco.setInt(5, endereco.getTipoEndereco().getId());
+                    psInsertEndereco.executeUpdate();
     
-                    ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                    ResultSet generatedKeys = psInsertEndereco.getGeneratedKeys();
                     if (generatedKeys.next()) {
                         int enderecoId = generatedKeys.getInt(1);
                         endereco.setId(enderecoId);
@@ -297,8 +318,20 @@ public class DaoCliente {
             }
         } finally {
             try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
+                if (psUpdatePessoa != null) {
+                    psUpdatePessoa.close();
+                }
+                if (psUpdateTelefone != null) {
+                    psUpdateTelefone.close();
+                }
+                if (psInsertTelefone != null) {
+                    psInsertTelefone.close();
+                }
+                if (psUpdateEndereco != null) {
+                    psUpdateEndereco.close();
+                }
+                if (psInsertEndereco != null) {
+                    psInsertEndereco.close();
                 }
                 if (connection != null) {
                     connection.setAutoCommit(true);
@@ -312,20 +345,32 @@ public class DaoCliente {
         return sucesso;
     }
     
-
-    private boolean verificarTelefoneExiste(Connection connection, long numero) throws SQLException {
+    private boolean verificarTelefoneExiste(Connection connection, long numeroTelefone) throws SQLException {
         String query = "SELECT COUNT(*) FROM telefone WHERE numero = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setLong(1, numero);
-        ResultSet resultSet = preparedStatement.executeQuery();
-    
-        if (resultSet.next()) {
-            int count = resultSet.getInt(1);
-            return count > 0;
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setLong(1, numeroTelefone);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
         }
-    
         return false;
     }
+    
+    private boolean verificarTipoTelefoneExiste(Connection connection, int idTipo) throws SQLException {
+        String query = "SELECT COUNT(*) FROM tipotelefone WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, idTipo);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+    
     
 
     public int encontrarIdClientePorNome(String nomeCliente) {
