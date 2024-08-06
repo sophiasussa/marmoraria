@@ -26,6 +26,8 @@ import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -218,6 +220,11 @@ public class ClienteView extends Composite<VerticalLayout> {
         dialog.setWidth("1200px");
         dialog.setHeight("1000px");
 
+        H2 titulo = new H2("Editar");
+        layout.add(titulo);
+
+        VerticalLayout layout1 = new VerticalLayout();
+
         TextField nomeField = new TextField("Nome");
         nomeField.setValue(cliente.getNome());
         nomeField.addClassName("rounded-text-field");
@@ -231,7 +238,7 @@ public class ClienteView extends Composite<VerticalLayout> {
         rgField.addClassName("rounded-text-field");
 
         HorizontalLayout camposLayout = new HorizontalLayout(nomeField, cpfField, rgField);
-        layout.add(camposLayout);
+        layout1.add(camposLayout);
 
         List<Telefone> telefonesTemp = new ArrayList<>(cliente.getTelefones());    
         Grid<Telefone> telefoneGrid = new Grid<>(Telefone.class);
@@ -242,12 +249,13 @@ public class ClienteView extends Composite<VerticalLayout> {
         telefoneGrid.addColumn(telefone -> telefone.getTipoTelefone().getNome()).setHeader("Tipo");
         updateGridHeight(telefoneGrid, telefonesTemp.size());
 
-        layout.add(telefoneGrid);
+        layout1.add(telefoneGrid);
 
         Button addTelefoneButton = new Button("+");
         addTelefoneButton.getElement().getStyle().set("margin-left", "auto");
-        addTelefoneButton.getStyle().set("border-radius", "30px");
+        addTelefoneButton.getStyle().set("border-radius", "25px");
         addTelefoneButton.getStyle().set("background-color", "#007bff");
+        addTelefoneButton.getStyle().set("box-shadow", "0 0 4px rgba(0, 0, 0, 0.2)");
         addTelefoneButton.getStyle().set("color", "#ffffff");
         VerticalLayout telefoneAdicionarLayout = new VerticalLayout();
         ComboBox<TipoTelefone> tipoTelefoneComboBox = new ComboBox<>("Tipo");
@@ -256,6 +264,8 @@ public class ClienteView extends Composite<VerticalLayout> {
         TextField novoTelefoneField = new TextField("Número");
         novoTelefoneField.addClassName("rounded-text-field");        
         Button inserirTelefoneButton = new Button("Inserir");
+        inserirTelefoneButton.getElement().getStyle().set("margin-left", "650px");
+        inserirTelefoneButton.addClassName("styled-button");
 
         inserirTelefoneButton.addClickListener(event -> {
             if (telefonesTemp.size() < 5) {
@@ -279,16 +289,18 @@ public class ClienteView extends Composite<VerticalLayout> {
             }
         });
 
-        telefoneAdicionarLayout.add(new HorizontalLayout(tipoTelefoneComboBox, novoTelefoneField), inserirTelefoneButton);
+        HorizontalLayout telefoneFieldsLayout = new HorizontalLayout(tipoTelefoneComboBox, novoTelefoneField);
+        telefoneFieldsLayout.addClassName("bordered-layout1");
+        telefoneAdicionarLayout.add(telefoneFieldsLayout, inserirTelefoneButton);
         telefoneAdicionarLayout.setVisible(false);
-        layout.add(telefoneAdicionarLayout);
+        layout1.add(telefoneAdicionarLayout);
 
         addTelefoneButton.addClickListener(event -> {
             addTelefoneButton.setVisible(false);
             telefoneAdicionarLayout.setVisible(true);
         });
 
-        layout.add(addTelefoneButton);
+        layout1.add(addTelefoneButton);
 
         List<Endereco> enderecosTemp = new ArrayList<>(cliente.getEnderecos());
         Grid<Endereco> enderecoGrid = new Grid<>(Endereco.class);
@@ -303,12 +315,13 @@ public class ClienteView extends Composite<VerticalLayout> {
         enderecoGrid.addColumn(endereco -> endereco.getTipoEndereco().getNome()).setHeader("Tipo");
         updateGridHeight(enderecoGrid, enderecosTemp.size());
 
-        layout.add(enderecoGrid);
+        layout1.add(enderecoGrid);
 
         Button addEnderecoButton = new Button("+");
         addEnderecoButton.getElement().getStyle().set("margin-left", "auto");
-        addEnderecoButton.getStyle().set("border-radius", "30px");
+        addEnderecoButton.getStyle().set("border-radius", "25px");
         addEnderecoButton.getStyle().set("background-color", "#007bff");
+        addEnderecoButton.getStyle().set("box-shadow", "0 0 4px rgba(0, 0, 0, 0.2)");
         addEnderecoButton.getStyle().set("color", "#ffffff");
         VerticalLayout enderecoAdicionarLayout = new VerticalLayout();
         ComboBox<TipoEndereco> tipoEnderecoComboBox = new ComboBox<>("Tipo de Endereço");
@@ -325,6 +338,8 @@ public class ClienteView extends Composite<VerticalLayout> {
         TextField bairroField = new TextField("Bairro");
         bairroField.addClassName("rounded-text-field");  
         Button inserirEnderecoButton = new Button("Inserir");
+        inserirEnderecoButton.getElement().getStyle().set("margin-left", "970px");
+        inserirEnderecoButton.addClassName("styled-button");
 
         inserirEnderecoButton.addClickListener(event -> {
             if (enderecosTemp.size() < 5) {
@@ -357,18 +372,18 @@ public class ClienteView extends Composite<VerticalLayout> {
             }
         });
 
-        enderecoAdicionarLayout.add(new HorizontalLayout(tipoEnderecoComboBox, cidadeComboBox),
-                                    new HorizontalLayout(logradouroField, numeroField, bairroField),
-                                    inserirEnderecoButton);
+        HorizontalLayout enderecoFieldsLayout = new HorizontalLayout(tipoEnderecoComboBox, cidadeComboBox, logradouroField, numeroField, bairroField);
+        enderecoFieldsLayout.addClassName("bordered-layout");
+        enderecoAdicionarLayout.add(enderecoFieldsLayout, inserirEnderecoButton);
         enderecoAdicionarLayout.setVisible(false);
-        layout.add(enderecoAdicionarLayout);
+        layout1.add(enderecoAdicionarLayout);
 
         addEnderecoButton.addClickListener(event -> {
             addEnderecoButton.setVisible(false);
             enderecoAdicionarLayout.setVisible(true);
         });
 
-        layout.add(addEnderecoButton);
+        layout1.add(addEnderecoButton);
 
 
         Button salvarButton = new Button("Salvar", event -> {
@@ -390,13 +405,17 @@ public class ClienteView extends Composite<VerticalLayout> {
         salvarButton.getStyle().set("border-radius", "10px");
         salvarButton.getStyle().set("background-color", "#28a745");
         salvarButton.getStyle().set("color", "#ffffff");
+        salvarButton.getStyle().set("box-shadow", "0 0 4px rgba(0, 0, 0, 0.2)");
 
         Button cancelarButton = new Button(VaadinIcon.CLOSE.create(), event -> dialog.close());
-        cancelarButton.getStyle().set("border-radius", "50%");
-        cancelarButton.getStyle().set("background-color", "#dc3545");
-        cancelarButton.getStyle().set("color", "#ffffff");
-
-        layout.add(new HorizontalLayout(salvarButton, cancelarButton));
+        cancelarButton.getStyle().set("background-color", "#ffffff");
+        cancelarButton.getStyle().set("color", "#a9a9a9");
+        layout1.addClassName("conteudo-pagina");
+    
+        layout.add(layout1);
+        HorizontalLayout botaoFieldsLayout = new HorizontalLayout(salvarButton, cancelarButton);
+        botaoFieldsLayout.getElement().getStyle().set("margin-left", "980px");
+        layout.add(botaoFieldsLayout);
         dialog.add(layout);
         dialog.open();
     }
