@@ -67,47 +67,25 @@ public class MainLayout extends AppLayout {
 
         SideNav registro = createNavigation();
 
-        SideNav nav = createNavegation2();
-
-        addToDrawer(header, registro, nav, createFooter());
+        addToDrawer(header, registro, createFooter());
     }
 
     private SideNav createNavigation() {
         SideNav registro = new SideNav();
+    
+        SideNavItem registrosLink = new SideNavItem("Cadastros");
         
-        registro.setLabel("Registros");
+        registrosLink.addItem(new SideNavItem("Cliente", ClienteView.class, VaadinIcon.GROUP.create()));
+        registrosLink.addItem(new SideNavItem("Cliente2", NovoClienteView.class, VaadinIcon.GROUP.create()));
+        registrosLink.addItem(new SideNavItem("Fornecedor", FornecedorView.class, LineAwesomeIcon.ADDRESS_BOOK.create()));
+        registrosLink.addItem(new SideNavItem("Novo Fornecedor", NovoFornecedorView.class, LineAwesomeIcon.ADDRESS_BOOK.create()));
+        registrosLink.addItem(new SideNavItem("Funcionários", FuncionarioView.class, VaadinIcon.KEY.create()));
+        registrosLink.addItem(new SideNavItem("Novo Funcionário", NovoFuncionarioView.class, VaadinIcon.KEY.create()));
 
-        registro.setCollapsible(true);
-        registro.setExpanded(false);
-        registro.addItem(new SideNavItem("Cliente", ClienteView.class, VaadinIcon.GROUP.create()));
-        registro.addItem(new SideNavItem("Cliente2", NovoClienteView.class, VaadinIcon.GROUP.create()));
-        registro.addItem(new SideNavItem("Fornecedor", FornecedorView.class, LineAwesomeIcon.ADDRESS_BOOK.create()));
-        registro.addItem(new SideNavItem("Novo Fornecedor", NovoFornecedorView.class, LineAwesomeIcon.ADDRESS_BOOK.create()));
-        registro.addItem(new SideNavItem("Funcionários", FuncionarioView.class, VaadinIcon.KEY.create()));
-        registro.addItem(new SideNavItem("Novo Funcionário", NovoFuncionarioView.class, VaadinIcon.KEY.create()));
-
-        registro.getElement().appendChild(new Element("hr"));
-
+        registro.addItem(registrosLink);
+    
         return registro;
     }
-    /* 
-    <vaadin-side-nav style="width:100%">
-    <vaadin-side-nav-item path="/messages">
-        <vaadin-icon icon="vaadin:envelope" slot="prefix"></vaadin-icon>
-        Messages
-        <vaadin-side-nav-item path="/inbox" slot="children">
-        <vaadin-icon icon="vaadin:inbox" slot="prefix"></vaadin-icon>
-        Inbox
-        </vaadin-side-nav-item>
-        <vaadin-side-nav-item path="/sent" slot="children">
-        <vaadin-icon icon="vaadin:paperplane" slot="prefix"></vaadin-icon>
-        Sent
-        </vaadin-side-nav-item>
-        <vaadin-side-nav-item path="/trash" slot="children">
-        <vaadin-icon icon="vaadin:trash" slot="prefix"></vaadin-icon>
-        Trash
-        </vaadin-side-nav-item>
-    </vaadin-side-nav-item>*/
 
     private SideNav createNavegation2(){
         SideNav nav = new SideNav();
